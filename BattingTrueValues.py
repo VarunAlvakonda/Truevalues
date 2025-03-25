@@ -171,6 +171,7 @@ def analyze_data_for_year3(year2, data2):
 @st.cache_data
 def load_data2(filename):
     return pd.read_csv(filename, low_memory=False)
+
 # Load the data
 def load_data(filename):
     data = load_data2(filename)
