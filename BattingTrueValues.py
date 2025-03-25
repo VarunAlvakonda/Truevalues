@@ -237,9 +237,21 @@ def load_data(filename):
 
 
 # The main app function
+import subprocess
+import os
+
+def ensure_lfs_file(filename):
+    if not os.path.exists(filename):
+        try:
+            st.info("Fetching large files with Git LFS...")
+            subprocess.run(["git", "lfs", "pull"], check=True)
+        except Exception as e:
+            st.error(f"Failed to pull LFS files: {e}")
+
 
 def main():
     st.title('True Values')
+    ensure_lfs_file("T20Leagues.csv")
     allt20s = load_data('T20Leagues.csv')
 
     selected_leagues = st.multiselect('Choose leagues:', allt20s['CompName'].unique())
