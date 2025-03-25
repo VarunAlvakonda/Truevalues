@@ -181,6 +181,7 @@ def load_data(filename):
     data.loc[data['Notes'] == 'W', 'B'] = 0
 
     data['RC'] = data['Runs'] + data['Extras']
+    data['TotalRuns'] = data['Runs'] + data['Extras']
 
     # Extract the year from the 'start_date' column
 
@@ -228,8 +229,6 @@ def load_data(filename):
     data['TeamBalls'] = data.groupby(['MatchNum', 'TeamInns'], as_index=False)['B'].cumsum()
     data['MatchBatRuns'] = data.groupby(['Batter','MatchNum', 'TeamInns'], as_index=False)['Runs'].cumsum()
     data['BatterBalls'] = data.groupby(['Batter','MatchNum', 'TeamInns'], as_index=False)['B'].cumsum()
-    data['MatchBatFours'] = data.groupby(['Batter','MatchNum', 'TeamInns'], as_index=False)['Fours'].cumsum()
-    data['MatchBatSixes'] = data.groupby(['Batter','MatchNum', 'TeamInns'], as_index=False)['Sixes'].cumsum()
     data['MatchBowlRC'] = data.groupby(['Bowlers','MatchNum', 'TeamInns'], as_index=False)['RC'].cumsum()
     data['MatchBowlBalls'] = data.groupby(['Bowlers','MatchNum', 'TeamInns'], as_index=False)['B'].cumsum()
     data['MatchBowlWkt'] = data.groupby(['Bowlers','MatchNum', 'TeamInns'], as_index=False)['Wkts'].cumsum()
