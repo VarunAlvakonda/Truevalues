@@ -168,11 +168,12 @@ def analyze_data_for_year3(year2, data2):
     return final_results4.round(2)
 
 
-
-# Load the data
 @st.cache_data
+def load_data2(filename):
+    return pd.read_csv(filename, low_memory=False)
+# Load the data
 def load_data(filename):
-    data = pd.read_csv(filename, low_memory=False)
+    data = load_data2(filename)
     # Set 'B' to 0 for deliveries that are wides
     data['B'] = 1
 
