@@ -240,7 +240,6 @@ def load_data(filename):
 
 def main():
     st.title('True Values')
-
     allt20s = load_data('T20Leagues.csv')
 
     selected_leagues = st.multiselect('Choose leagues:', allt20s['CompName'].unique())
