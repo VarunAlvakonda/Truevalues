@@ -57,7 +57,7 @@ def matchfactor(data,criteria):
             ['Inns', 'Runs', 'Balls', 'Outs', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
              'ball_diff']].sum().reset_index()
     else:
-        final_results5 = batting.groupby([criteria])[
+        final_results5 = batting.groupby(criteria)[
             ['Inns', 'Runs', 'Balls', 'Outs', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
              'ball_diff']].sum().reset_index()
 
