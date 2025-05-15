@@ -125,8 +125,7 @@ def main():
         choice4 = st.multiselect('Host Country:', data['Host Country'].unique())
         # choice5 = st.multiselect('Team:', data['Team'].unique())
     #    Filtering data based on the user's Date selection
-        if start_date > end_date:
-            st.error('Error: End Date must be greater than start Date.')
+
 
         start_runs, end_runs = st.slider('Select Minimum Runs:', min_value=1, max_value=run, value=(1, run))
         filtered_data = data
@@ -199,9 +198,6 @@ def main():
         choice4 = st.multiselect('Host Country:', data['Host Country'].unique())
         # choice5 = st.multiselect('Team:', data['Team'].unique())
     #    Filtering data based on the user's Date selection
-        if start_date > end_date:
-            st.error('Error: End Date must be greater than start Date.')
-
         start_runs, end_runs = st.slider('Select Minimum Wickets:', min_value=1, max_value=run, value=(1, run))
         filtered_data = data
         filtered_data2 = filtered_data[
