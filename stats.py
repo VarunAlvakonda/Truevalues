@@ -3,7 +3,7 @@ import math
 import pandas as pd
 import streamlit as st
 
-def matchfactor(data,criteria):
+def matchfactor(data,criteria,Position):
 
     final_results4 = data[data['Batting Position'] >= 0]
     final_results4 = data
@@ -28,7 +28,7 @@ def matchfactor(data,criteria):
 
     # final_results4 = final_results2[final_results2['Wickets at Entry'] >= 0]
     # # final_results4 = final_results4[final_results4['New Batter'].isin(players)]
-    final_results4 = final_results4[final_results4['Batting Position'] <= 6]
+    final_results4 = final_results4[final_results4['Batting Position'] <= Position]
 
 
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
@@ -108,7 +108,7 @@ def main():
     choice0 = st.selectbox('Batting Or Bowling:', ['Batting', 'Bowling'])
     if choice0 == 'Batting':
         data = load_data('entrypoints.csv')
-
+        start_pos = st.slider('Select Minimum Runs:', max_value=12)
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
 
         start_date = st.date_input('Start date', data['Start Date'].min())
@@ -157,7 +157,7 @@ def main():
         if st.button('Analyse'):
             # Call a hypothetical function to analyze data
 
-            results = matchfactor(filtered_data2,['New Batter','Team',choice5])
+            results = matchfactor(filtered_data2,['New Batter','Team',choice5],start_pos)
             results = results[
                 (results['Runs'] >= start_runs) & (results['Runs'] <= end_runs)]
             if choice == 'Overall':
