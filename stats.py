@@ -151,6 +151,9 @@ def main():
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
         choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year','Top6Average'])
+        if choice5 == 'Top6Average':
+            start_runs = st.slider('Select the Top 6 Average:', max_value=100)
+
         x = filtered_data2
         # A button to trigger the analysis
 
