@@ -3,7 +3,7 @@ import math
 import pandas as pd
 import streamlit as st
 
-def matchfactor(data):
+def matchfactor(data,criteria):
 
     final_results4 = data[data['Batting Position'] >= 0]
     final_results4 = data
@@ -52,7 +52,7 @@ def matchfactor(data):
 
     # batting.to_csv('toughruns.csv',index=False)
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
-    final_results5 = batting.groupby(['New Batter','Team',])[
+    final_results5 = batting.groupby([criteria])[
         ['Inns', 'Runs', 'Balls', 'Outs', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
          'ball_diff']].sum().reset_index()
 
@@ -138,22 +138,19 @@ def main():
             player = st.multiselect("Select Players:", players)
             # name = st.selectbox('Choose the Player From the list', data['striker'].unique())
         # if choice3:
-        #     filtered_data2 = filtered_data2[filtered_data2['HomeorAway'].isin(choice3)].copy()
+        #     filtered_data2 = filtered_data2[filtered_data2['HomeorAway'].isin(choice3)]
         if choice4:
-            filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)].copy()
+            filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
-        #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)].copy()
-        inns = [1, 2,3,4]
-        inn = st.multiselect("Select innings:", inns)
-        if inn:
-            filtered_data2 = filtered_data2[filtered_data2['Inns'].isin(inn)].copy()
+        #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
+        choice5 = st.selectbox('Additional Match Factor Groups:', ['Host Country', 'year'])
         x = filtered_data2
         # A button to trigger the analysis
 
         if st.button('Analyse'):
             # Call a hypothetical function to analyze data
 
-            results = matchfactor(filtered_data2)
+            results = matchfactor(filtered_data2,['New Batter','Team',choice5])
             results = results[
                 (results['Runs'] >= start_runs) & (results['Runs'] <= end_runs)]
             if choice == 'Overall':
@@ -209,15 +206,15 @@ def main():
             player = st.multiselect("Select Players:", players)
             # name = st.selectbox('Choose the Player From the list', data['striker'].unique())
         if choice3:
-            filtered_data2 = filtered_data2[filtered_data2['BowlType'].isin(choice3)].copy()
+            filtered_data2 = filtered_data2[filtered_data2['BowlType'].isin(choice3)]
         if choice4:
-            filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)].copy()
+            filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
-        #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)].copy()
+        #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
         inns = [1, 2,3,4]
         inn = st.multiselect("Select innings:", inns)
         if inn:
-            filtered_data2 = filtered_data2[filtered_data2['Inn'].isin(inn)].copy()
+            filtered_data2 = filtered_data2[filtered_data2['Inn'].isin(inn)]
         x = filtered_data2
         # A button to trigger the analysis
 
