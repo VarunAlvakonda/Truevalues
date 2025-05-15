@@ -108,7 +108,7 @@ def main():
     choice0 = st.selectbox('Batting Or Bowling:', ['Batting', 'Bowling'])
     if choice0 == 'Batting':
         data = load_data('entrypoints.csv')
-        start_pos = st.slider('Select Minimum Runs:', max_value=12)
+        start_pos = st.slider('Select Batting Position Baseline:', max_value=12)
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
 
         start_date = st.date_input('Start date', data['Start Date'].min())
