@@ -28,7 +28,7 @@ def matchfactor(data):
 
     # final_results4 = final_results2[final_results2['Wickets at Entry'] >= 0]
     # # final_results4 = final_results4[final_results4['New Batter'].isin(players)]
-    final_results4 = final_results4[final_results4['Batting Position'] <= 4]
+    final_results4 = final_results4[final_results4['Batting Position'] <= 6]
 
 
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
