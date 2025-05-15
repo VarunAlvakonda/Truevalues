@@ -5,7 +5,7 @@ import streamlit as st
 
 def matchfactor(data):
 
-    final_results4 = data[data['Wickets at Entry'] >= 0]
+    final_results4 = data[data['Batting Position'] >= 0]
     final_results4 = data
 
 # final_results4 = final_results4[final_results4['Wickets at Entry'] <= 4]
@@ -28,7 +28,7 @@ def matchfactor(data):
 
     # final_results4 = final_results2[final_results2['Wickets at Entry'] >= 0]
     # # final_results4 = final_results4[final_results4['New Batter'].isin(players)]
-    final_results4 = final_results4[final_results4['Wickets at Entry'] <= 4]
+    final_results4 = final_results4[final_results4['Batting Position'] <= 4]
 
 
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
