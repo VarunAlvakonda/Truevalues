@@ -62,16 +62,15 @@ def matchfactor(data,criteria):
              'ball_diff']].sum().reset_index()
 
     final_results5['ave'] = (final_results5['Runs']) / (final_results5['Outs'])
-    final_results5['sr'] = (final_results5['Runs']) / (final_results5['Balls']) * 100
 
     final_results5['mean_ave'] = (final_results5['run_diff']) / (final_results5['out_diff'])
-    final_results5['mean_sr'] = (final_results5['run_diff']) / (final_results5['ball_diff']) * 100
 
     final_results5['Match Factor'] = (final_results5['ave']) / (final_results5['mean_ave'])
-    final_results5['SR Ratio'] = (final_results5['sr']) / (final_results5['mean_sr'])
 
     # final_results5 = final_results5[final_results5['New Batter'].isin(names)]
-    return final_results5[['New Batter','Team','Inns', 'Runs', 'Balls', 'Outs','ave','mean_ave','Match Factor',]].round(2)
+    final_results5 = final_results5.drop(columns=[ 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff','ball_diff'])
+    return final_results5
+    # return final_results5[['New Batter','Team','Inns', 'Runs', 'Balls', 'Outs','ave','mean_ave','Match Factor',]].round(2)
 
 def bowlmatchfactor(bowling):
 
