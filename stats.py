@@ -46,9 +46,9 @@ def matchfactor(data,criteria):
 
     batting['mean_ave'] = (batting['run_diff']) / (batting['out_diff'])
     batting['mean_sr'] = (batting['run_diff']) / (batting['ball_diff']) * 100
-    # start_runs = 30
-    # batting.loc[batting['mean_ave'] <= 30, 'Top6Average'] = f'<={start_runs}'
-    # batting.loc[batting['mean_ave'] > 30, 'Top6Average'] = f'<={start_runs}'
+    start_runs = 30
+    batting.loc[batting['mean_ave'] <= 30, 'Top6Average'] = f'<={start_runs}'
+    batting.loc[batting['mean_ave'] > 30, 'Top6Average'] = f'<={start_runs}'
     # batting = batting[batting['Host Country'].isin(['England','South Africa','New Zealand','Australia'])]
     # batting = batting[batting['Team'].isin(['IND','BAN','SL','PAK'])]
 
@@ -149,7 +149,7 @@ def main():
             filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
-        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year',])
+        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year','Top6Average'])
 
         x = filtered_data2
         # A button to trigger the analysis
