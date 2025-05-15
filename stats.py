@@ -47,8 +47,8 @@ def matchfactor(data,criteria):
     batting['mean_ave'] = (batting['run_diff']) / (batting['out_diff'])
     batting['mean_sr'] = (batting['run_diff']) / (batting['ball_diff']) * 100
     start_runs = 30
-    batting.loc[batting['mean_ave'] <= 30, 'Top6Average'] = f'<={start_runs}'
-    batting.loc[batting['mean_ave'] > 30, 'Top6Average'] = f'<={start_runs}'
+    batting.loc[batting['mean_ave'] <= start_runs, 'Top6Average'] = f'<={start_runs}'
+    batting.loc[batting['mean_ave'] > start_runs, 'Top6Average'] = f'>{start_runs}'
     # batting = batting[batting['Host Country'].isin(['England','South Africa','New Zealand','Australia'])]
     # batting = batting[batting['Team'].isin(['IND','BAN','SL','PAK'])]
 
