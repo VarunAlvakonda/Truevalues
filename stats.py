@@ -52,9 +52,14 @@ def matchfactor(data,criteria):
 
     # batting.to_csv('toughruns.csv',index=False)
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
-    final_results5 = batting.groupby([criteria])[
-        ['Inns', 'Runs', 'Balls', 'Outs', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
-         'ball_diff']].sum().reset_index()
+    if criteria == ['New Batter','Team','Overall']:
+        final_results5 = batting.groupby(['New Batter','Team',])[
+            ['Inns', 'Runs', 'Balls', 'Outs', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
+             'ball_diff']].sum().reset_index()
+    else:
+        final_results5 = batting.groupby([criteria])[
+            ['Inns', 'Runs', 'Balls', 'Outs', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
+             'ball_diff']].sum().reset_index()
 
     final_results5['ave'] = (final_results5['Runs']) / (final_results5['Outs'])
     final_results5['sr'] = (final_results5['Runs']) / (final_results5['Balls']) * 100
@@ -143,7 +148,7 @@ def main():
             filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
-        choice5 = st.selectbox('Additional Match Factor Groups:', ['Host Country', 'year'])
+        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year'])
         x = filtered_data2
         # A button to trigger the analysis
 
