@@ -77,7 +77,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
     if criteria == ['New Batter','Team','Overall']:
         final_results5 = batting.groupby(['New Batter','Team',])[
-            ['Inns', 'Runs', 'Balls', 'Outs', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
+            ['Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
              'ball_diff']].sum().reset_index()
     else:
         final_results5 = batting.groupby(criteria)[
