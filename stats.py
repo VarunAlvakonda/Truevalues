@@ -47,8 +47,8 @@ def matchfactor(data,criteria,Position):
     batting['mean_ave'] = (batting['run_diff']) / (batting['out_diff'])
     batting['mean_sr'] = (batting['run_diff']) / (batting['ball_diff']) * 100
     start_runs = 30
-    batting.loc[batting['mean_ave'] <= start_runs, 'Top6Average'] = f'<={start_runs}'
-    batting.loc[batting['mean_ave'] > start_runs, 'Top6Average'] = f'>{start_runs}'
+    batting.loc[batting['mean_ave'] <= start_runs, f'Top{Position}Average'] = f'<={start_runs}'
+    batting.loc[batting['mean_ave'] > start_runs, f'Top{Position}Average'] = f'>{start_runs}'
     # batting = batting[batting['Host Country'].isin(['England','South Africa','New Zealand','Australia'])]
     # batting = batting[batting['Team'].isin(['IND','BAN','SL','PAK'])]
 
@@ -108,7 +108,7 @@ def main():
     choice0 = st.selectbox('Batting Or Bowling:', ['Batting', 'Bowling'])
     if choice0 == 'Batting':
         data = load_data('entrypoints.csv')
-        start_pos = st.slider('Select Batting Position Baseline:', min_value=1,max_value=12)
+        start_pos = st.slider('Select Batting Position Baseline:', min_value=1,max_value=12,value=(1,6))
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
 
         start_date = st.date_input('Start date', data['Start Date'].min())
