@@ -81,7 +81,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
              'ball_diff']].sum().reset_index()
     else:
         final_results5 = batting.groupby(criteria)[
-            ['Inns', 'Runs', 'Balls', 'Outs', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
+            ['Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
              'ball_diff']].sum().reset_index()
 
     final_results5['ave'] = (final_results5['Runs']) / (final_results5['Outs'])
