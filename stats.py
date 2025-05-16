@@ -116,7 +116,7 @@ def main():
     choice0 = st.selectbox('Batting Or Bowling:', ['Batting', 'Bowling'])
     if choice0 == 'Batting':
         data = load_data('entrypoints.csv')
-        factorchoice = st.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team','Team and Opposition'])
+        factorchoice = st.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team and Opposition','Team'])
         start_pos = st.slider('Select Batting Position Baseline:', min_value=1,max_value=12)
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
 
