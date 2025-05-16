@@ -18,12 +18,17 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
     # final_results4 = final_results4[final_results4['year'].isin(years_of_interest)]
     # final_results4 = final_results4[final_results4['Result']=='won']
-
+    final_results4['Fifties'] = 0
+    final_results4['Centuries'] = 0
+    final_results4.loc[(final_results4['Runs'] >= 50) & (final_results4['Runs'] <= 99), 'Fifties'] = 1
+    final_results4.loc[(final_results4['Runs'] >= 100), 'Centuries'] = 1
     df_match_totals = final_results4.groupby(['New Batter', 'Team','Start Date','Host Country']).agg(
         Inns=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Outs=('Out', 'sum'),
         Balls=('BF', 'sum'),
+        Fifties = ('Fifties','sum'),
+        Centuries = ('Centuries','sum'),
     ).reset_index()
 
     # final_results4 = final_results2[final_results2['Wickets at Entry'] >= 0]
@@ -36,6 +41,8 @@ def matchfactor(data,criteria,Position,typeoffactor):
             Runs=('Runs', 'sum'),
             Outs=('Out', 'sum'),
             Balls=('BF', 'sum'),
+            Fifties = ('Fifties','sum'),
+            Centuries = ('Centuries','sum'),
         ).reset_index()
 
         batting = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Host Country',], suffixes=('', '_grouped'))
@@ -44,10 +51,13 @@ def matchfactor(data,criteria,Position,typeoffactor):
             Runs=('Runs', 'sum'),
             Outs=('Out', 'sum'),
             Balls=('BF', 'sum'),
+            Fifties = ('Fifties','sum'),
+            Centuries = ('Centuries','sum'),
         ).reset_index()
 
         batting = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','Host Country',], suffixes=('', '_grouped'))
-
+    batting['cen_diff'] = batting['Centuries_grouped'] - batting['Centuries']
+    batting['FiftiesPlus_diff'] = batting['Fifties_grouped']+batting['Centuries_grouped'] - batting['Fifties'] - batting['Centuries']
     batting['run_diff'] = batting['Runs_grouped'] - batting['Runs']
     batting['out_diff'] = batting['Outs_grouped'] - batting['Outs']
     batting['ball_diff'] = batting['Balls_grouped'] - batting['Balls']
@@ -57,6 +67,9 @@ def matchfactor(data,criteria,Position,typeoffactor):
     start_runs = 30
     batting.loc[batting['mean_ave'] <= start_runs, f'Top{Position}Average'] = f'<={start_runs}'
     batting.loc[batting['mean_ave'] > start_runs, f'Top{Position}Average'] = f'>{start_runs}'
+    start_runs = 0
+    batting.loc[batting['cen_diff'] == start_runs, 'CenturiesScored'] = '0 Centuries'
+    batting.loc[batting['FiftiesPlus_diff'] == start_runs, 'FiftyPlusScored'] = '0 FiftyPluses'
     # batting = batting[batting['Host Country'].isin(['England','South Africa','New Zealand','Australia'])]
     # batting = batting[batting['Team'].isin(['IND','BAN','SL','PAK'])]
 
@@ -158,7 +171,7 @@ def main():
             filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
-        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year',f'Top{start_pos}Average'])
+        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored'])
 
         x = filtered_data2
         # A button to trigger the analysis
