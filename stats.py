@@ -3,7 +3,7 @@ import math
 import pandas as pd
 import streamlit as st
 
-def matchfactor(data,criteria,Position):
+def matchfactor(data,criteria,Position,typeoffactor):
 
     final_results4 = data[data['Batting Position'] >= 0]
     final_results4 = data
@@ -30,15 +30,23 @@ def matchfactor(data,criteria,Position):
     # # final_results4 = final_results4[final_results4['New Batter'].isin(players)]
     final_results4 = final_results4[final_results4['Batting Position'] <= Position]
 
+    if typeoffactor == 'Team and Opposition':
+        # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
+        df_match_totals2 = final_results4.groupby(['Start Date','Host Country',]).agg(
+            Runs=('Runs', 'sum'),
+            Outs=('Out', 'sum'),
+            Balls=('BF', 'sum'),
+        ).reset_index()
 
-    # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
-    df_match_totals2 = final_results4.groupby(['Start Date','Host Country',]).agg(
-        Runs=('Runs', 'sum'),
-        Outs=('Out', 'sum'),
-        Balls=('BF', 'sum'),
-    ).reset_index()
+        batting = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Host Country',], suffixes=('', '_grouped'))
+    else:
+        df_match_totals2 = final_results4.groupby(['Team','Start Date','Host Country',]).agg(
+            Runs=('Runs', 'sum'),
+            Outs=('Out', 'sum'),
+            Balls=('BF', 'sum'),
+        ).reset_index()
 
-    batting = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Host Country',], suffixes=('', '_grouped'))
+        batting = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','Host Country',], suffixes=('', '_grouped'))
 
     batting['run_diff'] = batting['Runs_grouped'] - batting['Runs']
     batting['out_diff'] = batting['Outs_grouped'] - batting['Outs']
@@ -108,6 +116,7 @@ def main():
     choice0 = st.selectbox('Batting Or Bowling:', ['Batting', 'Bowling'])
     if choice0 == 'Batting':
         data = load_data('entrypoints.csv')
+        factorchoice = st.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team','Team and Opposition'])
         start_pos = st.slider('Select Batting Position Baseline:', min_value=1,max_value=12)
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
 
@@ -157,7 +166,7 @@ def main():
         if st.button('Analyse'):
             # Call a hypothetical function to analyze data
 
-            results = matchfactor(filtered_data2,['New Batter','Team',choice5],start_pos)
+            results = matchfactor(filtered_data2,['New Batter','Team',choice5],start_pos,factorchoice)
             results = results[
                 (results['Runs'] >= start_runs) & (results['Runs'] <= end_runs)]
             if choice == 'Overall':
