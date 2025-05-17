@@ -133,8 +133,13 @@ def main():
         start_pos = st.slider('Select Batting Position Baseline:', min_value=1,max_value=12)
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
 
-        start_date = st.date_input('Start date', data['Start Date'].min())
-        end_date = st.date_input('End date', data['Start Date'].max())
+        # Extract min and max dates as `datetime.date` objects
+        min_date = data['Start Date'].min().date()
+        max_date = data['Start Date'].max().date()
+
+        # Streamlit date inputs
+        start_date = st.date_input('Start date', min_date, min_value=min_date, max_value=max_date)
+        end_date = st.date_input('End date', max_date, min_value=min_date, max_value=max_date)
 
         # Filtering data based on the user's date selection
         if start_date > end_date:
