@@ -132,14 +132,17 @@ def main():
         factorchoice = st.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team and Opposition','Team'])
         start_pos = st.slider('Select Batting Position Baseline:', min_value=1,max_value=12)
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
+        valid_dates = data['Start Date'].dropna()
 
-        # Extract min and max dates as `datetime.date` objects
-        min_date = data['Start Date'].min().date()
-        max_date = data['Start Date'].max().date()
+        if not valid_dates.empty:
+            min_dt = valid_dates.min().date()
+            max_dt = valid_dates.max().date()
+        else:
+            min_dt = datetime.date(2000, 1, 1)
+            max_dt = datetime.date(2030, 1, 1)
 
-        # Streamlit date inputs
-        start_date = st.date_input('Start date', min_date, min_value=min_date, max_value=max_date)
-        end_date = st.date_input('End date', max_date, min_value=min_date, max_value=max_date)
+        start_date = st.date_input("Start date", min_value=min_dt, max_value=max_dt, value=min_dt)
+        end_date = st.date_input("End date", min_value=min_dt, max_value=max_dt, value=max_dt)
 
         # Filtering data based on the user's date selection
         if start_date > end_date:
