@@ -133,7 +133,7 @@ def main():
         start_pos = st.slider('Select Batting Position Baseline:', min_value=1,max_value=12)
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
         valid_dates = data['Start Date'].dropna()
-
+        import datetime
         if not valid_dates.empty:
             min_dt = valid_dates.min().date()
             max_dt = valid_dates.max().date()

@@ -1,3 +1,8 @@
 plotly
 matplotlib
 pygments
+scipy
+pandas
+numpy
+streamlit
+datetime
