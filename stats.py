@@ -22,7 +22,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results4['Centuries'] = 0
     final_results4.loc[(final_results4['Runs'] >= 50) & (final_results4['Runs'] <= 99), 'Fifties'] = 1
     final_results4.loc[(final_results4['Runs'] >= 100), 'Centuries'] = 1
-    df_match_totals = final_results4.groupby(['New Batter', 'Team','Start Date','Host Country','year']).agg(
+    df_match_totals = final_results4.groupby(['New Batter', 'Team','Start Date','Host Country','year','Result or Draw']).agg(
         Inns=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Outs=('Out', 'sum'),
@@ -37,7 +37,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
     if typeoffactor == 'Team and Opposition':
         # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
-        df_match_totals2 = final_results4.groupby(['Start Date','Host Country','year',]).agg(
+        df_match_totals2 = final_results4.groupby(['Start Date','Host Country','year','Result or Draw']).agg(
             Runs=('Runs', 'sum'),
             Outs=('Out', 'sum'),
             Balls=('BF', 'sum'),
@@ -47,7 +47,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
         batting = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Host Country','year',], suffixes=('', '_grouped'))
     else:
-        df_match_totals2 = final_results4.groupby(['Team','Start Date','Host Country','year',]).agg(
+        df_match_totals2 = final_results4.groupby(['Team','Start Date','Host Country','year','Result or Draw']).agg(
             Runs=('Runs', 'sum'),
             Outs=('Out', 'sum'),
             Balls=('BF', 'sum'),
@@ -55,7 +55,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
             Centuries = ('Centuries','sum'),
         ).reset_index()
 
-        batting = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','Host Country','year',], suffixes=('', '_grouped'))
+        batting = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','Host Country','year','Result or Draw'], suffixes=('', '_grouped'))
     batting['cen_diff'] = batting['Centuries_grouped'] - batting['Centuries']
     batting['FiftiesPlus_diff'] = batting['Fifties_grouped']+batting['Centuries_grouped'] - batting['Fifties'] - batting['Centuries']
     batting['run_diff'] = batting['Runs_grouped'] - batting['Runs']
