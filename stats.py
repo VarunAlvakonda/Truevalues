@@ -179,7 +179,8 @@ def main():
             filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
-        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored'])
+        filtered_data2 = filtered_data2.rename(columns={'Result2':'Result or Draw'})
+        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','Result or Draw'])
         # choice6 = st.multiselect('Result:', data['Result'].unique())
         # if choice6:
         #     filtered_data2 = filtered_data2[filtered_data2['Result'].isin(choice6)]
