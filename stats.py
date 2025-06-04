@@ -115,7 +115,7 @@ def bowlmatchfactor(bowling,criteria):
     bowling2['Mean SR'] = bowling2['ball_diff']/bowling2['wickets_diff']
     bowling2['Match Factor'] = bowling2['Mean Ave']/bowling2['Ave']
     bowling2['SR Factor'] = bowling2['Mean SR']/bowling2['SR']
-    bowling2 = bowling2.drop(columns=[ 'Mean Ave', 'Mean SR','Outs_grouped', 'run_diff', 'wickets_diff','ball_diff'])
+    bowling2 = bowling2.drop(columns=[ 'Mean Ave', 'Mean SR','run_diff', 'wickets_diff','ball_diff'])
     return bowling2.round(2)
 
 
