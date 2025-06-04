@@ -96,9 +96,9 @@ def matchfactor(data,criteria,Position,typeoffactor):
     return final_results5
     # return final_results5[['New Batter','Team','Inns', 'Runs', 'Balls', 'Outs','ave','mean_ave','Match Factor',]].round(2)
 
-def bowlmatchfactor(bowling):
+def bowlmatchfactor(bowling,criteria):
 
-    bowling2 = bowling.groupby(['Bowler','BowlType',]).agg(
+    bowling2 = bowling.groupby(criteria).agg(
         Mat=('Matches', 'sum'),
         Runs=('Runs', 'sum'),
         Balls = ('Balls','sum'),
@@ -107,16 +107,16 @@ def bowlmatchfactor(bowling):
         ball_diff = ('ball_diff','sum'),
         wickets_diff = ('wickets_diff','sum'),
     ).reset_index()
-    most_frequent_team = bowling.groupby(['Bowler','BowlType'])['Team'].agg(lambda x: x.mode().iat[0]).reset_index()
-    bowling2 = pd.merge(bowling2, most_frequent_team, on=['Bowler','BowlType'], suffixes=('', '_grouped'))
+    most_frequent_team = bowling.groupby(criteria)['Team'].agg(lambda x: x.mode().iat[0]).reset_index()
+    bowling2 = pd.merge(bowling2, most_frequent_team, on=criteria, suffixes=('', '_grouped'))
     bowling2['Ave'] = bowling2['Runs']/bowling2['Wickets']
     bowling2['SR'] = bowling2['Balls']/bowling2['Wickets']
-    bowling2['BPM'] = bowling2['Balls']/bowling2['Mat']
     bowling2['Mean Ave'] = bowling2['run_diff']/bowling2['wickets_diff']
     bowling2['Mean SR'] = bowling2['ball_diff']/bowling2['wickets_diff']
     bowling2['Match Factor'] = bowling2['Mean Ave']/bowling2['Ave']
     bowling2['SR Factor'] = bowling2['Mean SR']/bowling2['SR']
-    return bowling2[['Bowler','BowlType','Team','Mat','Runs','Balls','Wickets','Ave','SR','BPM','Match Factor','SR Factor',]].round(2)
+    bowling2 = bowling2.drop(columns=[ 'Mean Ave', 'Mean SR','Outs_grouped', 'run_diff', 'wickets_diff','ball_diff'])
+    return bowling2.round(2)
 
 
 
@@ -252,17 +252,14 @@ def main():
             filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
-        inns = [1, 2,3,4]
-        inn = st.multiselect("Select innings:", inns)
-        if inn:
-            filtered_data2 = filtered_data2[filtered_data2['Inn'].isin(inn)]
+        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year',])
         x = filtered_data2
         # A button to trigger the analysis
 
         if st.button('Analyse'):
             # Call a hypothetical function to analyze data
 
-            results = bowlmatchfactor(filtered_data2)
+            results = bowlmatchfactor(filtered_data2,['Bowler','BowlType',choice5])
             results = results[
                 (results['Wickets'] >= start_runs) & (results['Wickets'] <= end_runs)]
             if choice == 'Overall':
