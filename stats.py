@@ -98,7 +98,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
 def bowlmatchfactor(bowling,criteria):
 
-    if criteria == ['New Batter','Team','Overall']:
+    if criteria == ['Bowler','BowlType','Overall']:
         bowling2 = bowling.groupby(['Bowler','BowlType']).agg(
             Mat=('Matches', 'sum'),
             Runs=('Runs', 'sum'),
