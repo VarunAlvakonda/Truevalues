@@ -107,8 +107,8 @@ def bowlmatchfactor(bowling,criteria):
         ball_diff = ('ball_diff','sum'),
         wickets_diff = ('wickets_diff','sum'),
     ).reset_index()
-    most_frequent_team = bowling.groupby(criteria)['Team'].agg(lambda x: x.mode().iat[0]).reset_index()
-    bowling2 = pd.merge(bowling2, most_frequent_team, on=criteria, suffixes=('', '_grouped'))
+    # most_frequent_team = bowling.groupby(criteria)['Team'].agg(lambda x: x.mode().iat[0]).reset_index()
+    # bowling2 = pd.merge(bowling2, most_frequent_team, on=criteria, suffixes=('', '_grouped'))
     bowling2['Ave'] = bowling2['Runs']/bowling2['Wickets']
     bowling2['SR'] = bowling2['Balls']/bowling2['Wickets']
     bowling2['Mean Ave'] = bowling2['run_diff']/bowling2['wickets_diff']
