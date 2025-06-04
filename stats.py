@@ -98,15 +98,26 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
 def bowlmatchfactor(bowling,criteria):
 
-    bowling2 = bowling.groupby(criteria).agg(
-        Mat=('Matches', 'sum'),
-        Runs=('Runs', 'sum'),
-        Balls = ('Balls','sum'),
-        Wickets=('Wickets', 'sum'),
-        run_diff = ('run_diff','sum'),
-        ball_diff = ('ball_diff','sum'),
-        wickets_diff = ('wickets_diff','sum'),
-    ).reset_index()
+    if criteria == ['New Batter','Team','Overall']:
+        bowling2 = bowling.groupby(['Bowler','BowlType']).agg(
+            Mat=('Matches', 'sum'),
+            Runs=('Runs', 'sum'),
+            Balls = ('Balls','sum'),
+            Wickets=('Wickets', 'sum'),
+            run_diff = ('run_diff','sum'),
+            ball_diff = ('ball_diff','sum'),
+            wickets_diff = ('wickets_diff','sum'),
+        ).reset_index()
+    else:
+        bowling2 = bowling.groupby(criteria).agg(
+            Mat=('Matches', 'sum'),
+            Runs=('Runs', 'sum'),
+            Balls = ('Balls','sum'),
+            Wickets=('Wickets', 'sum'),
+            run_diff = ('run_diff','sum'),
+            ball_diff = ('ball_diff','sum'),
+            wickets_diff = ('wickets_diff','sum'),
+        ).reset_index()
     # most_frequent_team = bowling.groupby(criteria)['Team'].agg(lambda x: x.mode().iat[0]).reset_index()
     # bowling2 = pd.merge(bowling2, most_frequent_team, on=criteria, suffixes=('', '_grouped'))
     bowling2['Ave'] = bowling2['Runs']/bowling2['Wickets']
