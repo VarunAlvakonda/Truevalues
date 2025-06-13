@@ -47,7 +47,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
         batting = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Host Country','year',], suffixes=('', '_grouped'))
     else:
-        df_match_totals2 = final_results4.groupby(['Team','Inns','Start Date','Host Country','year',]).agg(
+        df_match_totals2 = final_results4.groupby(['Team','Start Date','Host Country','year',]).agg(
             Runs=('Runs', 'sum'),
             Outs=('Out', 'sum'),
             Balls=('BF', 'sum'),
@@ -55,7 +55,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
             Centuries = ('Centuries','sum'),
         ).reset_index()
 
-        batting = pd.merge(df_match_totals, df_match_totals2, on=['Team','Inns','Start Date','Host Country','year'], suffixes=('', '_grouped'))
+        batting = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','Host Country','year'], suffixes=('', '_grouped'))
 
     batting['cen_diff'] = batting['Centuries_grouped'] - batting['Centuries']
     batting['FiftiesPlus_diff'] = batting['Fifties_grouped']+batting['Centuries_grouped'] - batting['Fifties'] - batting['Centuries']
