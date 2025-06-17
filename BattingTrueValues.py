@@ -1,5 +1,7 @@
+import numpy as np
 import pandas as pd
 import streamlit as st
+from scipy.optimize import curve_fit
 
 place = 'Venue_x'
 type = 'PhaseofSeason'
@@ -119,9 +121,9 @@ def analyze_data_for_year3(year2, data2):
     over_outs.columns = ['TeamInns', place, 'Over', 'Outs',]
 
     # Group by player and aggregate the runs scored
-    player_runs = combineddata.groupby(['Batter', 'TeamInns', place, 'over'])[['Runs', 'B',]].sum().reset_index()
+    player_runs = combineddata.groupby(['Batter', 'TeamInns', place, 'over'])[['Runs', 'B','Impact']].sum().reset_index()
     # Rename the columns for clarity
-    player_runs.columns = ['Player', 'TeamInns', place, 'Over', 'Runs Scored', 'BF']
+    player_runs.columns = ['Player', 'TeamInns', place, 'Over', 'Runs Scored', 'BF','Impact']
 
     # Display the merged DataFrame
     over_runs = combineddata.groupby(['TeamInns', place, 'over'])[['Runs', 'B']].sum().reset_index()
@@ -155,7 +157,7 @@ def analyze_data_for_year3(year2, data2):
                                    right=True)
 
     truevalues = combined_df3.groupby(['Player',], observed=True)[
-        ['Runs Scored', 'BF', 'Out','Expected Runs', 'Expected Outs']].sum().reset_index()
+        ['Runs Scored', 'BF', 'Out','Impact','Expected Runs', 'Expected Outs']].sum().reset_index()
 
     final_results = truemetrics(truevalues)
 
@@ -223,6 +225,37 @@ def load_data(filename):
     combined_data2 = data[data['TeamInns']==2]
     combined_data2 = pd.merge(combined_data2,runsbymatch, how='left',on = ['MatchNum',])
     data = pd.concat([data[data['TeamInns']==1], combined_data2], ignore_index=True)
+    dl_params_df = pd.read_csv('dl_model_parameters.csv',low_memory=False)
+    dl_params_df2 = pd.read_csv('dl_model_parameters_ipl_2008_2013.csv',low_memory=False)
+    dl_params_df3 = pd.read_csv('dl_model_parameters_ipl_2014_2017.csv',low_memory=False)
+    dl_params_df4 = pd.read_csv('dl_model_parameters_ipl_2018_2021.csv',low_memory=False)
+    dl_params_df5 = pd.read_csv('dl_model_parameters_odi_1999_2005.csv',low_memory=False)
+
+    def cubic_poly(w, a, b, c, d):
+        return a * w**3 + b * w**2 + c * w + d
+
+    def params(dl_params_df):
+        alpha_params, _ = curve_fit(cubic_poly, dl_params_df["Wickets"], dl_params_df["Alpha"])
+        beta_params, _ = curve_fit(cubic_poly, dl_params_df["Wickets"], dl_params_df["Beta"])
+        return alpha_params, beta_params
+
+    def dl_model(u, w):
+        # Compute Alpha and Beta using cubic polynomial fits
+        alpha = cubic_poly(w, *alpha_params)
+        beta = cubic_poly(w, *beta_params)
+        return alpha * (1 - np.exp(-u / beta))
+
+    def dl_model(u, w,alpha_params,beta_params):
+        # Compute Alpha and Beta using cubic polynomial fits
+        alpha = cubic_poly(w, *alpha_params)
+        beta = cubic_poly(w, *beta_params)
+        return alpha * (1 - np.exp(-u / beta))
+
+
+    def dl_model2(u, w):
+        beta = (-3.9181e-2 * w**3) + (1.372 * w**2) - (27.43871 * w) + 171.1543
+        alpha = (-7.38799e-3 * w**3) + (1.8905 * w**2) - (52.0124 * w) + 331.99
+        return alpha * (1 - np.exp(-u / beta))
 
     data['TeamRuns'] = data.groupby(['MatchNum', 'TeamInns'], as_index=False)['TotalRuns'].cumsum()
     data['Wkts'] = 0
@@ -235,6 +268,34 @@ def load_data(filename):
     data['MatchBowlBalls'] = data.groupby(['Bowlers','MatchNum', 'TeamInns'], as_index=False)['B'].cumsum()
     data['MatchBowlWkt'] = data.groupby(['Bowlers','MatchNum', 'TeamInns'], as_index=False)['Wkts'].cumsum()
     data['BallsRemaining'] = (120 - data['TeamBalls'])
+    alpha_params, beta_params = params(dl_params_df)
+    data["PredictedRemainingRuns_Smoothed"] = data.apply(lambda row: dl_model(row["BallsRemaining"], row["TeamWicket"],alpha_params,beta_params), axis=1)
+    data["ParInitial"] = data.apply(lambda row: dl_model(120, 0,alpha_params,beta_params), axis=1)
+
+    data['UpdatedPar'] = 0
+    data.loc[data['TeamInns']==2,'UpdatedPar'] = data.apply(lambda row: dl_model(row["BallsRemaining"], row["TeamWicket"],alpha_params,beta_params),axis=1)/dl_model(120, 0,alpha_params,beta_params)*data["TargetRuns"]
+
+    alpha_params, beta_params = params(dl_params_df2)
+
+    data.loc[data['year'].isin(range(2008,2014)),"PredictedRemainingRuns_Smoothed" ] = data.apply(lambda row: dl_model(row["BallsRemaining"], row["TeamWicket"],alpha_params,beta_params), axis=1)
+    data.loc[data['year'].isin(range(2008,2014)),"ParInitial" ] = data.apply(lambda row: dl_model(120, 0,alpha_params,beta_params), axis=1)
+
+
+    alpha_params, beta_params = params(dl_params_df3)
+
+    data.loc[data['year'].isin(range(2014,2018)),"PredictedRemainingRuns_Smoothed" ] = data.apply(lambda row: dl_model(row["BallsRemaining"], row["TeamWicket"],alpha_params,beta_params), axis=1)
+    data.loc[data['year'].isin(range(2014,2018)),"ParInitial" ] = data.apply(lambda row: dl_model(120, 0,alpha_params,beta_params), axis=1)
+
+    alpha_params, beta_params = params(dl_params_df4)
+
+    data.loc[data['year'].isin(range(2018,2022)),"PredictedRemainingRuns_Smoothed" ] = data.apply(lambda row: dl_model(row["BallsRemaining"], row["TeamWicket"],alpha_params,beta_params), axis=1)
+    data.loc[data['year'].isin(range(2018,2022)),"ParInitial" ] = data.apply(lambda row: dl_model(120, 0,alpha_params,beta_params), axis=1)
+
+    data["Impact"] = data.groupby(["MatchNum", "TeamInns"])["TotalPredictedScore"].diff()
+    data.loc[data.groupby(["MatchNum", "TeamInns"]).head(1).index, "Impact"] = \
+        data["TotalPredictedScore"] - data["ParInitial"]
+
+
     return data
 
 
@@ -242,18 +303,10 @@ def load_data(filename):
 import subprocess
 import os
 
-def ensure_lfs_file(filename):
-    if not os.path.exists(filename):
-        try:
-            st.info("Fetching large files with Git LFS...")
-            subprocess.run(["git", "lfs", "pull"], check=True)
-        except Exception as e:
-            st.error(f"Failed to pull LFS files: {e}")
 
 
 def main():
     st.title('True Values')
-    ensure_lfs_file("T20Leagues.csv")
     allt20s = load_data('T20Leagues.csv')
 
     selected_leagues = st.multiselect('Choose leagues:', allt20s['CompName'].unique())
