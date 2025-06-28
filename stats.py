@@ -22,7 +22,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results4['Centuries'] = 0
     final_results4.loc[(final_results4['Runs'] >= 50) & (final_results4['Runs'] <= 99), 'Fifties'] = 1
     final_results4.loc[(final_results4['Runs'] >= 100), 'Centuries'] = 1
-    df_match_totals = final_results4.groupby(['New Batter', 'Team','Start Date','Host Country','year','HomeorAway']).agg(
+    df_match_totals = final_results4.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
         Inns=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Outs=('Out', 'sum'),
@@ -192,7 +192,7 @@ def main():
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
         filtered_data2 = filtered_data2.rename(columns={'Result2':'Result or Draw'})
-        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway'])
+        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'Opposition','year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway'])
         # choice6 = st.multiselect('Result:', data['Result'].unique())
         # if choice6:
         #     filtered_data2 = filtered_data2[filtered_data2['Result'].isin(choice6)]
