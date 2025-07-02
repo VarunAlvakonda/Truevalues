@@ -67,7 +67,8 @@ def matchfactor(data,criteria,Position,typeoffactor):
     batting['mean_sr'] = (batting['run_diff']) / (batting['ball_diff']) * 100
     # run = max((batting['mean_ave']).astype(int))
     start_runs = 35
-    start_runs = st.slider('Select Average Threshold:', max_value=200)
+    if criteria == ['New Batter','Team',f'Top{Position}Average']:
+        start_runs = st.slider('Select Average Threshold:', max_value=200)
     batting.loc[batting['mean_ave'] <= start_runs, f'Top{Position}Average'] = f'<={start_runs}'
     batting.loc[batting['mean_ave'] > start_runs, f'Top{Position}Average'] = f'>{start_runs}'
     batting.loc[batting['cen_diff'] == start_runs, 'CenturiesScored'] = '0 Centuries'
