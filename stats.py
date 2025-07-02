@@ -201,30 +201,30 @@ def main():
         x = filtered_data2
         # A button to trigger the analysis
 
-        if st.button('Analyse'):
-            # Call a hypothetical function to analyze data
+        # if st.button('Analyse'):
+        # Call a hypothetical function to analyze data
 
-            results = matchfactor(filtered_data2,['New Batter','Team',choice5],start_pos,factorchoice)
-            results = results[
-                (results['Runs'] >= start_runs) & (results['Runs'] <= end_runs)]
-            if choice == 'Overall':
-                # Display the results
-                if choice2 == 'Individual':
-                    temp = []
-                    for i in player:
-                        if i in results['New Batter'].unique():
-                            temp.append(i)
-                        else:
-                            st.subheader(f'{i} not in this list')
-                    results = results[results['New Batter'].isin(temp)]
-                    results = results.rename(columns={'New Batter': 'Batsman'})
+        results = matchfactor(filtered_data2,['New Batter','Team',choice5],start_pos,factorchoice)
+        results = results[
+            (results['Runs'] >= start_runs) & (results['Runs'] <= end_runs)]
+        if choice == 'Overall':
+            # Display the results
+            if choice2 == 'Individual':
+                temp = []
+                for i in player:
+                    if i in results['New Batter'].unique():
+                        temp.append(i)
+                    else:
+                        st.subheader(f'{i} not in this list')
+                results = results[results['New Batter'].isin(temp)]
+                results = results.rename(columns={'New Batter': 'Batsman'})
 
-                    st.dataframe(results.round(2))
-                else:
-                    results = results.rename(columns={'New Batter': 'Batsman'})
+                st.dataframe(results.round(2))
+            else:
+                results = results.rename(columns={'New Batter': 'Batsman'})
 
-                    results = results.sort_values(by=['Runs'], ascending=False)
-                    st.dataframe(results.round(2))
+                results = results.sort_values(by=['Runs'], ascending=False)
+                st.dataframe(results.round(2))
     else:
         data = load_data('toughwickets2.csv')
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
