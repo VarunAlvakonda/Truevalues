@@ -71,6 +71,11 @@ def matchfactor(data,criteria,Position,typeoffactor):
         start_runs = st.slider('Select Average Threshold:', max_value=200)
     batting.loc[batting['mean_ave'] <= start_runs, f'Top{Position}Average'] = f'<={start_runs}'
     batting.loc[batting['mean_ave'] > start_runs, f'Top{Position}Average'] = f'>{start_runs}'
+    if criteria == ['New Batter','Team','EntryPoints']:
+        start_runs = st.slider('Select Entry Over (from 1999):', max_value=500)
+        batting = batting[batting['year']>=1999]
+    batting.loc[batting['EntryBalls'] <= start_runs, 'EntryPoints'] = f'<={start_runs}'
+    batting.loc[batting['EntryBalls'] > start_runs, 'EntryPoints'] = f'>{start_runs}'
     batting.loc[batting['cen_diff'] == start_runs, 'CenturiesScored'] = '0 Centuries'
     batting.loc[batting['FiftiesPlus_diff'] == start_runs, 'FiftyPlusScored'] = '0 FiftyPluses'
     # batting = batting[batting['Host Country'].isin(['England','South Africa','New Zealand','Australia'])]
@@ -208,7 +213,7 @@ def main():
         #     # Your logic here
         #     filtered_data2 = filtered_data2[filtered_data2['year']>=1999]
 
-        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'Opposition','year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway'])
+        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'Opposition','year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway','EntryPoints'])
         # choice6 = st.multiselect('Result:', data['Result'].unique())
         # if choice6:
         #     filtered_data2 = filtered_data2[filtered_data2['Result'].isin(choice6)]
