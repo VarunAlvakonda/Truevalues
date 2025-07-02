@@ -194,6 +194,20 @@ def main():
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
         filtered_data2 = filtered_data2.rename(columns={'Result2':'Result or Draw'})
+        start_over, end_over = st.slider('Select Entry Over (1999 onwards):', min_value=1, max_value=run, value=(1, run)):
+        # Track interaction manually
+        if 'slider_touched' not in st.session_state:
+            st.session_state.slider_touched = False
+
+        # When user changes the slider, flag it
+        if st.session_state.run_slider != (1, run):
+            st.session_state.slider_touched = True
+
+        # Now act only after interaction
+        if st.session_state.slider_touched:
+            # Your logic here
+            filtered_data2 = filtered_data2[filtered_data2['year']>=1999]
+
         choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'Opposition','year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway'])
         # choice6 = st.multiselect('Result:', data['Result'].unique())
         # if choice6:
