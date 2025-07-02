@@ -65,7 +65,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
     batting['mean_ave'] = (batting['run_diff']) / (batting['out_diff'])
     batting['mean_sr'] = (batting['run_diff']) / (batting['ball_diff']) * 100
-    run = max((batting['mean_ave']).astype(int))
+    # run = max((batting['mean_ave']).astype(int))
     # start_runs = st.slider('Select Average Threshold:', max_value=run)
     start_runs = 30
     batting.loc[batting['mean_ave'] <= start_runs, f'Top{Position}Average'] = f'<={start_runs}'
