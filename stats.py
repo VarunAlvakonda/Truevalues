@@ -175,7 +175,7 @@ def main():
         options = ['Overall',]
 
         # Create a select box
-        choice = st.selectbox('Select your option:', options)
+        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'Opposition','year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway',])
         choice2 = st.selectbox('Individual Player or Everyone:', ['Individual', 'Everyone'])
         # choice3 = st.multiselect('Home or Away:', ['Home', 'Away'])
         choice4 = st.multiselect('Host Country:', data['Host Country'].unique())
@@ -214,7 +214,7 @@ def main():
         #     # Your logic here
         #     filtered_data2 = filtered_data2[filtered_data2['year']>=1999]
 
-        choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'Opposition','year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway',])
+
         # choice6 = st.multiselect('Result:', data['Result'].unique())
         # if choice6:
         #     filtered_data2 = filtered_data2[filtered_data2['Result'].isin(choice6)]
