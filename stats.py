@@ -107,7 +107,8 @@ def matchfactor(data,criteria,Position,typeoffactor):
     # final_results5 = final_results5[final_results5['New Batter'].isin(names)]
     final_results5 = final_results5.drop(columns=[ 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff','ball_diff'])
     choice4 = st.multiselect('Team:', data['Team'].unique())
-    final_results5 = final_results5[final_results5['Team'].isin(choice4)]
+    if choice4:
+        final_results5 = final_results5[final_results5['Team'].isin(choice4)]
     return final_results5
     # return final_results5[['New Batter','Team','Inns', 'Runs', 'Balls', 'Outs','ave','mean_ave','Match Factor',]].round(2)
 
