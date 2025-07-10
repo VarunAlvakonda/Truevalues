@@ -22,7 +22,12 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results4['Centuries'] = 0
     final_results4.loc[(final_results4['Runs'] >= 50) & (final_results4['Runs'] <= 99), 'Fifties'] = 1
     final_results4.loc[(final_results4['Runs'] >= 100), 'Centuries'] = 1
-    df_match_totals = final_results4.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
+    choice4 = st.multiselect('Keeper:', ['Yes'])
+    final_results5 = final_results4
+    if choice4:
+        final_results5 = final_results5[final_results5['IsKeeper']=='Yes']
+
+    df_match_totals = final_results5.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
         Inns=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Outs=('Out', 'sum'),
