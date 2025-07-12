@@ -26,6 +26,9 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results5 = final_results4
     if choice4:
         final_results5 = final_results5[final_results5['IsKeeper']=='Yes']
+    choice4 = st.multiselect('Opposition:', data['Opposition'].unique())
+    if choice4:
+        final_results5 = final_results5[final_results5['Opposition'].isin(choice4)]
 
     df_match_totals = final_results5.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
         Inns=('I', 'sum'),
