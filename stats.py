@@ -22,7 +22,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results4['Centuries'] = 0
     final_results4.loc[(final_results4['Runs'] >= 50) & (final_results4['Runs'] <= 99), 'Fifties'] = 1
     final_results4.loc[(final_results4['Runs'] >= 100), 'Centuries'] = 1
-    final_results4.loc[(final_results4['Balls'] > 0), 'RunswithBalls'] = final_results4['Runs']
+    final_results4.loc[(final_results4['BF'] > 0), 'RunswithBalls'] = final_results4['Runs']
     choice4 = st.multiselect('Keeper:', ['Yes'])
     final_results5 = final_results4
     if choice4:
