@@ -22,6 +22,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results4['Centuries'] = 0
     final_results4.loc[(final_results4['Runs'] >= 50) & (final_results4['Runs'] <= 99), 'Fifties'] = 1
     final_results4.loc[(final_results4['Runs'] >= 100), 'Centuries'] = 1
+    final_results4.loc[(final_results4['Balls'] > 0), 'RunswithBalls'] = final_results4['Runs']
     choice4 = st.multiselect('Keeper:', ['Yes'])
     final_results5 = final_results4
     if choice4:
@@ -37,6 +38,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
         Balls=('BF', 'sum'),
         Fifties = ('Fifties','sum'),
         Centuries = ('Centuries','sum'),
+        RunswithBalls = ('RunswithBalls','sum')
     ).reset_index()
 
     # final_results4 = final_results2[final_results2['Wickets at Entry'] >= 0]
@@ -51,6 +53,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
             Balls=('BF', 'sum'),
             Fifties = ('Fifties','sum'),
             Centuries = ('Centuries','sum'),
+            RunswithBalls = ('RunswithBalls','sum')
         ).reset_index()
 
         batting = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Host Country','year',], suffixes=('', '_grouped'))
@@ -61,6 +64,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
             Balls=('BF', 'sum'),
             Fifties = ('Fifties','sum'),
             Centuries = ('Centuries','sum'),
+            RunswithBalls = ('RunswithBalls','sum')
         ).reset_index()
 
 
@@ -69,11 +73,12 @@ def matchfactor(data,criteria,Position,typeoffactor):
     batting['cen_diff'] = batting['Centuries_grouped'] - batting['Centuries']
     batting['FiftiesPlus_diff'] = batting['Fifties_grouped']+batting['Centuries_grouped'] - batting['Fifties'] - batting['Centuries']
     batting['run_diff'] = batting['Runs_grouped'] - batting['Runs']
+    batting['runswithballs_diff'] = batting['RunswithBalls_grouped'] - batting['RunswithBalls']
     batting['out_diff'] = batting['Outs_grouped'] - batting['Outs']
     batting['ball_diff'] = batting['Balls_grouped'] - batting['Balls']
 
     batting['mean_ave'] = (batting['run_diff']) / (batting['out_diff'])
-    batting['mean_sr'] = (batting['run_diff']) / (batting['ball_diff']) * 100
+    batting['mean_sr'] = (batting['runswithballs_diff']) / (batting['ball_diff']) * 100
     # run = max((batting['mean_ave']).astype(int))
     start_runs = 35
     if criteria == ['New Batter','Team',f'Top{Position}Average']:
@@ -94,21 +99,21 @@ def matchfactor(data,criteria,Position,typeoffactor):
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
     if criteria == ['New Batter','Team','Overall']:
         final_results5 = batting.groupby(['New Batter','Team',])[
-            ['Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
-             'ball_diff']].sum().reset_index()
+            ['Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties','RunswithBalls', 'Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff',
+             'ball_diff','runswithballs_diff']].sum().reset_index()
     else:
         final_results5 = batting.groupby(criteria)[
-            ['Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties', 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff',
-             'ball_diff']].sum().reset_index()
+            ['Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties','RunswithBalls', 'Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff',
+             'ball_diff','runswithballs_diff']].sum().reset_index()
 
     final_results5['ave'] = (final_results5['Runs']) / (final_results5['Outs'])
-
+    final_results5['sr'] = (final_results5['RunswithBalls']) / (final_results5['Balls'])*100
     final_results5['mean_ave'] = (final_results5['run_diff']) / (final_results5['out_diff'])
-
+    final_results5['mean_sr'] = (final_results5['runswithballs_diff']) / (final_results5['ball_diff']) * 100
     final_results5['Match Factor'] = (final_results5['ave']) / (final_results5['mean_ave'])
-
+    final_results5['Strike Factor'] = (final_results5['sr']) / (final_results5['mean_sr'])
     # final_results5 = final_results5[final_results5['New Batter'].isin(names)]
-    final_results5 = final_results5.drop(columns=[ 'Runs_grouped', 'Outs_grouped', 'run_diff', 'out_diff','ball_diff'])
+    final_results5 = final_results5.drop(columns=[ 'Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff','ball_diff','runswithballs_diff'])
     choice4 = st.multiselect('Team:', data['Team'].unique())
     if choice4:
         final_results5 = final_results5[final_results5['Team'].isin(choice4)]
