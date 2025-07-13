@@ -113,7 +113,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results5['Match Factor'] = (final_results5['ave']) / (final_results5['mean_ave'])
     final_results5['Strike Factor'] = (final_results5['sr']) / (final_results5['mean_sr'])
     # final_results5 = final_results5[final_results5['New Batter'].isin(names)]
-    final_results5 = final_results5.drop(columns=[ 'Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff','ball_diff','runswithballs_diff'])
+    final_results5 = final_results5.drop(columns=[ 'RunswithBalls','Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff','ball_diff','runswithballs_diff'])
     choice4 = st.multiselect('Team:', data['Team'].unique())
     if choice4:
         final_results5 = final_results5[final_results5['Team'].isin(choice4)]
