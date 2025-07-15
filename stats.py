@@ -30,7 +30,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     choice4 = st.multiselect('Opposition:', data['Opposition'].unique())
     if choice4:
         final_results5 = final_results5[final_results5['Opposition'].isin(choice4)]
-    choice4 = st.multiselect('Batting Position:', data['Batting Position'].unique())
+    choice4 = st.multiselect('Batting Position:', [1,2,3,4,5,6,7,8,9,10,11,12])
     if choice4:
         final_results5 = final_results5[final_results5['Batting Position'].isin(choice4)]
 
