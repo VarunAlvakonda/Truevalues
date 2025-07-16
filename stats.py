@@ -142,7 +142,7 @@ def bowlmatchfactor(bowling,criteria):
     # bowling['Bowling Position'] = pd.to_numeric(bowling['Bowling Position'], errors='coerce')
     typeoffactor = st.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team and Opposition','Team'])
     # bowling=bowling[bowling['Bowling Position']<=4]
-    typeoftype = st.selectbox('Select Match Factor by BowlType or Overall:', ['Overall','BowlType'])
+    typeoftype = st.selectbox('Select Match Factor by BowlType or Overall:', ['BowlType','Overall'])
     if typeoffactor == 'Team and Opposition':
         # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
         if typeoftype == 'BowlType':
