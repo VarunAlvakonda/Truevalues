@@ -299,7 +299,7 @@ def main():
             results = results.sort_values(by=['Runs'], ascending=False)
             st.dataframe(results.round(2))
     else:
-        data = load_data('toughwickets2.csv')
+        data = load_data('toughwickets.csv')
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
 
         start_date = st.date_input('Start date', data['Start Date'].min())
