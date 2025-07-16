@@ -135,10 +135,20 @@ def bowlmatchfactor(bowling,criteria):
     typeoffactor = st.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team and Opposition','Team'])
     # bowling=bowling[bowling['Bowling Position']<=4]
     typeoftype = st.selectbox('Select Match Factor by BowlType or Overall:', ['BowlType','Overall'])
-    choice4 = st.multiselect('Result:', bowling['Result'].unique())
     bowling2 = bowling
+
+    choice4 = st.multiselect('Team:', bowling2['Team'].unique())
+    if choice4:
+        bowling2 = bowling2[bowling2['Team'].isin(choice4)]
+
+    choice4 = st.multiselect('Opposition:', bowling2['Opposition'].unique())
+    if choice4:
+        bowling2 = bowling2[bowling2['Opposition'].isin(choice4)]
+
+    choice4 = st.multiselect('Result:', bowling['Result'].unique())
     if choice4:
         bowling2 = bowling2[bowling2['Result'].isin(choice4)]
+
     df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','Start Date','Ground','Host Country','year','OppRating']).agg(
         Inn=('I', 'sum'),
         Runs=('Runs', 'sum'),
