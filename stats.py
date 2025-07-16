@@ -309,8 +309,8 @@ def main():
         if start_date > end_date:
             st.error('Error: End date must be greater than start date.')
 
-        data2 = data.groupby('Bowler')[['Wickets']].sum().reset_index()
-        run = max((data2['Wickets']).astype(int))
+        data2 = data.groupby('Bowler')[['Wkts']].sum().reset_index()
+        run = max((data2['Wkts']).astype(int))
 
         # Selectors for user input
         options = ['Overall',]
