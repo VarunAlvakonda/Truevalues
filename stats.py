@@ -125,7 +125,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
 def bowlmatchfactor(bowling,criteria):
 
-    df_match_totals = bowling.groupby(['Bowler','Team','BowlType','Start Date','Ground','Host Country','year','OppRating']).agg(
+    df_match_totals = bowling.groupby(['Bowler','BowlType','Start Date','Ground','Host Country','year','OppRating']).agg(
         Inn=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Balls = ('Balls','sum'),
