@@ -125,6 +125,41 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
 def bowlmatchfactor(bowling,criteria):
 
+    df_match_totals = bowling.groupby(['Bowler','Team','BowlType','Start Date','Ground','Host Country','year','OppRating']).agg(
+        Inn=('I', 'sum'),
+        Runs=('Runs', 'sum'),
+        Balls = ('Balls','sum'),
+        Wickets=('Wkts', 'sum'),
+        Fivefer=('Fivefer', 'sum'),
+        EliteFivefer=('EliteFivefer', 'sum'),
+        Filth = ('Filth','sum')
+    ).reset_index()
+    df_match_totals['Matches'] = 1
+
+    # bowling = bowling[~bowling['Bowler'].isin(['R Ashwin','RA Jadeja'])]
+    # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
+    print(bowling.dtypes)
+    # bowling['Bowling Position'] = pd.to_numeric(bowling['Bowling Position'], errors='coerce')
+
+    # bowling=bowling[bowling['Bowling Position']<=4]
+    df_match_totals2 = bowling.groupby(['Start Date','BowlType','Ground','Host Country','year']).agg(
+        Runs=('Runs', 'sum'),
+        Balls = ('Balls','sum'),
+        Wickets=('Wkts', 'sum'),
+    ).reset_index()
+
+    bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
+
+    bowling['run_diff'] = bowling['Runs_grouped'] - bowling['Runs']
+    bowling['ball_diff'] = bowling['Balls_grouped'] - bowling['Balls']
+    bowling['wickets_diff'] = bowling['Wickets_grouped'] - bowling['Wickets']
+
+    bowling['AveforWicket'] = (bowling['run_diff']) / (bowling['wickets_diff'])
+    bowling['AveforWicket'] = (bowling['Runs_grouped']) / (bowling['Wickets_grouped'])
+
+    bowling.loc[bowling['AveforWicket'] <= 35, 'AveWicket'] = '<=30'
+    bowling.loc[bowling['AveforWicket'] > 35, 'AveWicket'] = '>30'
+
     if criteria == ['Bowler','BowlType','Overall']:
         bowling2 = bowling.groupby(['Bowler','BowlType']).agg(
             Mat=('Matches', 'sum'),
@@ -307,30 +342,28 @@ def main():
         x = filtered_data2
         # A button to trigger the analysis
 
-        if st.button('Analyse'):
-            # Call a hypothetical function to analyze data
 
-            results = bowlmatchfactor(filtered_data2,['Bowler','BowlType',choice5])
-            results = results[
-                (results['Wickets'] >= start_runs) & (results['Wickets'] <= end_runs)]
-            if choice == 'Overall':
-                # Display the results
-                if choice2 == 'Individual':
-                    temp = []
-                    for i in player:
-                        if i in results['Bowler'].unique():
-                            temp.append(i)
-                        else:
-                            st.subheader(f'{i} not in this list')
-                    results = results[results['Bowler'].isin(temp)]
-                    results = results.rename(columns={'Bowler': 'Bowler'})
+        results = bowlmatchfactor(filtered_data2,['Bowler','BowlType',choice5])
+        results = results[
+            (results['Wickets'] >= start_runs) & (results['Wickets'] <= end_runs)]
+        if choice == 'Overall':
+            # Display the results
+            if choice2 == 'Individual':
+                temp = []
+                for i in player:
+                    if i in results['Bowler'].unique():
+                        temp.append(i)
+                    else:
+                        st.subheader(f'{i} not in this list')
+                results = results[results['Bowler'].isin(temp)]
+                results = results.rename(columns={'Bowler': 'Bowler'})
 
-                    st.dataframe(results.round(2))
-                else:
-                    results = results.rename(columns={'Bowler': 'Bowler'})
+                st.dataframe(results.round(2))
+            else:
+                results = results.rename(columns={'Bowler': 'Bowler'})
 
-                    results = results.sort_values(by=['Wickets'], ascending=False)
-                    st.dataframe(results.round(2))
+                results = results.sort_values(by=['Wickets'], ascending=False)
+                st.dataframe(results.round(2))
 
 
 
