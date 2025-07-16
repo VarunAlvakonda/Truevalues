@@ -142,26 +142,39 @@ def bowlmatchfactor(bowling,criteria):
     # bowling['Bowling Position'] = pd.to_numeric(bowling['Bowling Position'], errors='coerce')
     typeoffactor = st.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team and Opposition','Team'])
     # bowling=bowling[bowling['Bowling Position']<=4]
-
+    typeoftype = st.selectbox('Select Match Factor by BowlType or Overall:', ['Overall','BowlType'])
     if typeoffactor == 'Team and Opposition':
         # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
-        df_match_totals2 = bowling.groupby(['Start Date','BowlType','Ground','Host Country','year']).agg(
-            Runs=('Runs', 'sum'),
-            Balls = ('Balls','sum'),
-            Wickets=('Wkts', 'sum'),
-        ).reset_index()
-
-        bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
+        if typeoftype == 'BowlType':
+            df_match_totals2 = bowling.groupby(['Start Date','BowlType','Ground','Host Country','year']).agg(
+                Runs=('Runs', 'sum'),
+                Balls = ('Balls','sum'),
+                Wickets=('Wkts', 'sum'),
+            ).reset_index()
+            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
+        else:
+            df_match_totals2 = bowling.groupby(['Start Date','Ground','Host Country','year']).agg(
+                Runs=('Runs', 'sum'),
+                Balls = ('Balls','sum'),
+                Wickets=('Wkts', 'sum'),
+            ).reset_index()
+            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Ground','Host Country','year'], suffixes=('', '_grouped'))
     else:
-        df_match_totals2 = bowling.groupby(['Team','Start Date','BowlType','Ground','Host Country','year']).agg(
-            Runs=('Runs', 'sum'),
-            Balls = ('Balls','sum'),
-            Wickets=('Wkts', 'sum'),
-        ).reset_index()
+        if typeoftype == 'BowlType':
+            df_match_totals2 = bowling.groupby(['Team','Start Date','BowlType','Ground','Host Country','year']).agg(
+                Runs=('Runs', 'sum'),
+                Balls = ('Balls','sum'),
+                Wickets=('Wkts', 'sum'),
+            ).reset_index()
 
-
-        bowling = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
-
+            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
+        else:
+            df_match_totals2 = bowling.groupby(['Team','Start Date','Ground','Host Country','year']).agg(
+                Runs=('Runs', 'sum'),
+                Balls = ('Balls','sum'),
+                Wickets=('Wkts', 'sum'),
+            ).reset_index()
+            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','Ground','Host Country','year'], suffixes=('', '_grouped'))
 
 
     bowling['run_diff'] = bowling['Runs_grouped'] - bowling['Runs']
