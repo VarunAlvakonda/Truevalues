@@ -140,15 +140,29 @@ def bowlmatchfactor(bowling,criteria):
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
     print(bowling.dtypes)
     # bowling['Bowling Position'] = pd.to_numeric(bowling['Bowling Position'], errors='coerce')
-
+    typeoffactor = st.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team and Opposition','Team'])
     # bowling=bowling[bowling['Bowling Position']<=4]
-    df_match_totals2 = bowling.groupby(['Start Date','BowlType','Ground','Host Country','year']).agg(
-        Runs=('Runs', 'sum'),
-        Balls = ('Balls','sum'),
-        Wickets=('Wkts', 'sum'),
-    ).reset_index()
 
-    bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
+    if typeoffactor == 'Team and Opposition':
+        # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
+        df_match_totals2 = bowling.groupby(['Start Date','BowlType','Ground','Host Country','year']).agg(
+            Runs=('Runs', 'sum'),
+            Balls = ('Balls','sum'),
+            Wickets=('Wkts', 'sum'),
+        ).reset_index()
+
+        bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
+    else:
+        df_match_totals2 = bowling.groupby(['Start Date','BowlType','Ground','Host Country','year']).agg(
+            Runs=('Runs', 'sum'),
+            Balls = ('Balls','sum'),
+            Wickets=('Wkts', 'sum'),
+        ).reset_index()
+
+
+        bowling = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
+
+
 
     bowling['run_diff'] = bowling['Runs_grouped'] - bowling['Runs']
     bowling['ball_diff'] = bowling['Balls_grouped'] - bowling['Balls']
@@ -160,8 +174,8 @@ def bowlmatchfactor(bowling,criteria):
     bowling.loc[bowling['AveforWicket'] <= 35, 'AveWicket'] = '<=30'
     bowling.loc[bowling['AveforWicket'] > 35, 'AveWicket'] = '>30'
 
-    if criteria == ['Bowler','BowlType','Overall']:
-        bowling2 = bowling.groupby(['Bowler','BowlType']).agg(
+    if criteria == ['Bowler','Team','BowlType','Overall']:
+        bowling2 = bowling.groupby(['Bowler','Team','BowlType']).agg(
             Mat=('Matches', 'sum'),
             Runs=('Runs', 'sum'),
             Balls = ('Balls','sum'),
@@ -343,7 +357,7 @@ def main():
         # A button to trigger the analysis
 
 
-        results = bowlmatchfactor(filtered_data2,['Bowler','BowlType',choice5])
+        results = bowlmatchfactor(filtered_data2,['Bowler','Team','BowlType',choice5])
         results = results[
             (results['Wickets'] >= start_runs) & (results['Wickets'] <= end_runs)]
         if choice == 'Overall':
