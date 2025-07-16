@@ -153,7 +153,7 @@ def bowlmatchfactor(bowling,criteria):
 
         bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
     else:
-        df_match_totals2 = bowling.groupby(['Start Date','BowlType','Ground','Host Country','year']).agg(
+        df_match_totals2 = bowling.groupby(['Team','Start Date','BowlType','Ground','Host Country','year']).agg(
             Runs=('Runs', 'sum'),
             Balls = ('Balls','sum'),
             Wickets=('Wkts', 'sum'),
