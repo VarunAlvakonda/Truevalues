@@ -6,3 +6,4 @@ pandas
 numpy
 streamlit
 datetime
+streamlit-aggrid
