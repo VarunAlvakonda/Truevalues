@@ -36,6 +36,25 @@ def matchfactor(data,criteria,Position,typeoffactor):
     choice4 = st.multiselect('Result:', data['Result'].unique())
     if choice4:
         final_results5 = final_results5[final_results5['Result'].isin(choice4)]
+
+    # Compute EntryBalls range
+    min_entry = 0
+    max_entry = int(final_results5['EntryBalls'].max())
+
+    # Slider for EntryBalls
+    entry_range = st.slider(
+        'Select EntryBalls Range:',
+        min_value=min_entry,
+        max_value=max_entry,
+        value=(min_entry, max_entry)
+    )
+
+    # Apply filter only if slider is changed from default
+    if entry_range != (min_entry, max_entry):
+        final_results5_filtered = final_results5[
+            (final_results5['EntryBalls'] >= entry_range[0]) &
+            (final_results5['EntryBalls'] <= entry_range[1])
+            ]
     df_match_totals = final_results5.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
         Inns=('I', 'sum'),
         Runs=('Runs', 'sum'),
