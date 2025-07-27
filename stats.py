@@ -50,6 +50,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
         value=(min_entry, max_entry)
     )
 
+
     # Apply filter only if slider is changed from default
     if entry_range != (min_entry, max_entry):
         final_results5 = final_results5[final_results5['year']>=1999]
@@ -58,23 +59,21 @@ def matchfactor(data,criteria,Position,typeoffactor):
             (final_results5['EntryBalls'] <= entry_range[1])
             ]
 
-
+    df_match_totals = final_results5.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
+        Inns=('I', 'sum'),
+        Runs=('Runs', 'sum'),
+        Outs=('Out', 'sum'),
+        Balls=('BF', 'sum'),
+        Fifties = ('Fifties','sum'),
+        Centuries = ('Centuries','sum'),
+        RunswithBalls = ('RunswithBalls','sum')
+    ).reset_index()
 
     # final_results4 = final_results2[final_results2['Wickets at Entry'] >= 0]
     # # final_results4 = final_results4[final_results4['New Batter'].isin(players)]
     final_results4 = final_results4[final_results4['Batting Position'] <= Position]
 
     if typeoffactor == 'Team and Opposition':
-        df_match_totals = final_results5.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
-            Inns=('I', 'sum'),
-            Runs=('Runs', 'sum'),
-            Outs=('Out', 'sum'),
-            Balls=('BF', 'sum'),
-            Fifties = ('Fifties','sum'),
-            Centuries = ('Centuries','sum'),
-            RunswithBalls = ('RunswithBalls','sum')
-        ).reset_index()
-
         # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
         df_match_totals2 = final_results4.groupby(['Start Date','Host Country','year']).agg(
             Runs=('Runs', 'sum'),
@@ -87,16 +86,6 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
         batting = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Host Country','year',], suffixes=('', '_grouped'))
     else:
-        df_match_totals = final_results5.groupby(['New Batter', 'Team','Inns','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
-            Inns=('I', 'sum'),
-            Runs=('Runs', 'sum'),
-            Outs=('Out', 'sum'),
-            Balls=('BF', 'sum'),
-            Fifties = ('Fifties','sum'),
-            Centuries = ('Centuries','sum'),
-            RunswithBalls = ('RunswithBalls','sum')
-        ).reset_index()
-
         df_match_totals2 = final_results4.groupby(['Team','Inns','Start Date','Host Country','year',]).agg(
             Runs=('Runs', 'sum'),
             Outs=('Out', 'sum'),
