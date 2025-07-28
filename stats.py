@@ -368,9 +368,18 @@ def main():
     else:
         data = load_data('toughwickets.csv')
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
+        valid_dates = data['Start Date'].dropna()
+        import datetime
+        if not valid_dates.empty:
+            min_dt = valid_dates.min().date()
+            max_dt = valid_dates.max().date()
+        else:
+            min_dt = datetime.date(2000, 1, 1)
+            max_dt = datetime.date(2030, 1, 1)
 
-        start_date = st.date_input('Start date', data['Start Date'].min())
-        end_date = st.date_input('End date', data['Start Date'].max())
+        start_date = st.date_input("Start date", min_value=min_dt, max_value=max_dt, value=min_dt)
+        end_date = st.date_input("End date", min_value=min_dt, max_value=max_dt, value=max_dt)
+
 
         # Filtering data based on the user's date selection
         if start_date > end_date:
