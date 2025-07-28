@@ -51,9 +51,8 @@ def matchfactor(data,criteria,Position,typeoffactor):
         value=(min_entry, max_entry)
     )
 
-    # Apply filter only if slider is changed from default
-    if entry_range != (min_entry, max_entry):
-        final_results5 = final_results5[
+
+    final_results5 = final_results5[
             (final_results5['Runs at Entry'] >= entry_range[0]) &
             (final_results5['Runs at Entry'] <= entry_range[1])
             ]
@@ -69,9 +68,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
         value=(min_entry, max_entry)
     )
 
-    # Apply filter only if slider is changed from default
-    if entry_range != (min_entry, max_entry):
-        final_results5 = final_results5[
+    final_results5 = final_results5[
             (final_results5['Wickets at Entry'] >= entry_range[0]) &
             (final_results5['Wickets at Entry'] <= entry_range[1])
             ]
