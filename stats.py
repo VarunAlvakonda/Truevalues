@@ -68,7 +68,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
         Centuries = ('Centuries','sum'),
         RunswithBalls = ('RunswithBalls','sum')
     ).reset_index()
-
+    df_match_totals['Matches'] = 1
     # final_results4 = final_results2[final_results2['Wickets at Entry'] >= 0]
     # # final_results4 = final_results4[final_results4['New Batter'].isin(players)]
     final_results4 = final_results4[final_results4['Batting Position'] <= Position]
@@ -127,11 +127,11 @@ def matchfactor(data,criteria,Position,typeoffactor):
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
     if criteria == ['New Batter','Team','Overall']:
         final_results5 = batting.groupby(['New Batter','Team',])[
-            ['Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties','RunswithBalls', 'Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff',
+            ['Matches','Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties','RunswithBalls', 'Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff',
              'ball_diff','runswithballs_diff']].sum().reset_index()
     else:
         final_results5 = batting.groupby(criteria)[
-            ['Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties','RunswithBalls', 'Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff',
+            ['Matches','Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties','RunswithBalls', 'Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff',
              'ball_diff','runswithballs_diff']].sum().reset_index()
 
     final_results5['ave'] = (final_results5['Runs']) / (final_results5['Outs'])
