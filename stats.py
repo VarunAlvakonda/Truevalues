@@ -121,7 +121,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
         batting = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Host Country','year',], suffixes=('', '_grouped'))
     else:
-        df_match_totals2 = final_results4.groupby(['Team','Inns','Start Date','Host Country','year',]).agg(
+        df_match_totals2 = final_results4.groupby(['Team','Start Date','Host Country','year',]).agg(
             Runs=('Runs', 'sum'),
             Outs=('Out', 'sum'),
             Balls=('BF', 'sum'),
