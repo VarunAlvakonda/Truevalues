@@ -39,39 +39,40 @@ def matchfactor(data,criteria,Position,typeoffactor):
         final_results5 = final_results5[final_results5['Result'].isin(choice4)]
 
 
-    # # Compute EntryBalls range
-    # min_entry = 0
-    # max_entry = int(final_results5['Runs at Entry'].max())
-    #
-    # # Slider for EntryBalls
-    # entry_range = st.slider(
-    #     "Choose Runs at Entry",
-    #     min_value=min_entry,
-    #     max_value=max_entry,
-    #     value=(min_entry, max_entry)
-    # )
-    #
-    #
-    # final_results5 = final_results5[
-    #         (final_results5['Runs at Entry'] >= entry_range[0]) &
-    #         (final_results5['Runs at Entry'] <= entry_range[1])
-    #         ]
-    #
-    # min_entry = 0
-    # max_entry = int(final_results5['Wickets at Entry'].max())
-    #
-    # # Slider for EntryBalls
-    # entry_range = st.slider(
-    #     "Choose Wickets at Entry",
-    #     min_value=min_entry,
-    #     max_value=max_entry,
-    #     value=(min_entry, max_entry)
-    # )
-    #
-    # final_results5 = final_results5[
-    #         (final_results5['Wickets at Entry'] >= entry_range[0]) &
-    #         (final_results5['Wickets at Entry'] <= entry_range[1])
-    #         ]
+    if  int(final_results5['Batting Position'].max()) >= 3:
+        # Compute EntryBalls range
+        min_entry = 0
+        max_entry = int(final_results5['Runs at Entry'].max())
+
+        # Slider for EntryBalls
+        entry_range = st.slider(
+            "Choose Runs at Entry",
+            min_value=min_entry,
+            max_value=max_entry,
+            value=(min_entry, max_entry)
+        )
+
+
+        final_results5 = final_results5[
+                (final_results5['Runs at Entry'] >= entry_range[0]) &
+                (final_results5['Runs at Entry'] <= entry_range[1])
+                ]
+
+        min_entry = 0
+        max_entry = int(final_results5['Wickets at Entry'].max())
+
+        # Slider for EntryBalls
+        entry_range = st.slider(
+            "Choose Wickets at Entry",
+            min_value=min_entry,
+            max_value=max_entry,
+            value=(min_entry, max_entry)
+        )
+
+        final_results5 = final_results5[
+                (final_results5['Wickets at Entry'] >= entry_range[0]) &
+                (final_results5['Wickets at Entry'] <= entry_range[1])
+                ]
 
     # Compute EntryBalls range
     min_entry = 0
