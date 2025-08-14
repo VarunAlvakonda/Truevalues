@@ -29,6 +29,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     if choice4:
         final_results5 = final_results5[final_results5['Batting Position'].isin(choice4)]
 
+    print(final_results5.columns)
     # Compute EntryBalls range
     min_age = int(final_results5['Age'].min())
     max_age = int(final_results5['Age'].max())
@@ -203,10 +204,16 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results5['Match Factor'] = (final_results5['ave']) / (final_results5['mean_ave'])
     final_results5['Strike Factor'] = (final_results5['sr']) / (final_results5['mean_sr'])
     # final_results5 = final_results5[final_results5['New Batter'].isin(names)]
-    final_results5 = final_results5.drop(columns=[ 'RunswithBalls','Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff','ball_diff','runswithballs_diff'])
+    final_results5 = final_results5.drop(columns=['mean_ave', 'mean_sr','RunswithBalls','Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff','ball_diff','runswithballs_diff'])
     choice4 = st.multiselect('Team:', data['Team'].unique())
     if choice4:
         final_results5 = final_results5[final_results5['Team'].isin(choice4)]
+    run = max((final_results5['Runs']).astype(int))
+    start_runs, end_runs = st.slider('Select Minimum Runs:', min_value=1, max_value=run, value=(1, run))
+    final_results5 = final_results5[(final_results5['Runs'] >= start_runs) & (final_results5['Runs'] <= end_runs)]
+    balls = max((final_results5['Balls']).astype(int))
+    start_balls, end_balls = st.slider('Select Minimum Balls:', min_value=1, max_value=balls, value=(1, balls))
+    final_results5 = final_results5[(final_results5['Balls'] >= start_balls) & (final_results5['Balls'] <= end_balls)]
     return final_results5
     # return final_results5[['New Batter','Team','Inns', 'Runs', 'Balls', 'Outs','ave','mean_ave','Match Factor',]].round(2)
 
@@ -366,7 +373,7 @@ def main():
     #    Filtering data based on the user's Date selection
 
 
-        start_runs, end_runs = st.slider('Select Minimum Runs:', min_value=1, max_value=run, value=(1, run))
+        # start_runs, end_runs = st.slider('Select Minimum Runs:', min_value=1, max_value=run, value=(1, run))
         filtered_data = data
         filtered_data2 = filtered_data[
             (filtered_data['Start Date'] >= pd.to_datetime(start_date)) & (filtered_data['Start Date'] <= pd.to_datetime(end_date))]
@@ -408,8 +415,8 @@ def main():
         # Call a hypothetical function to analyze data
 
         results = matchfactor(filtered_data2,['New Batter','Team',choice5],start_pos,factorchoice)
-        results = results[
-            (results['Runs'] >= start_runs) & (results['Runs'] <= end_runs)]
+        # results = results[
+        #     (results['Runs'] >= start_runs) & (results['Runs'] <= end_runs)]
         # Display the results
         if choice2 == 'Individual':
             temp = []
