@@ -428,12 +428,12 @@ def main():
             results = results[results['New Batter'].isin(temp)]
             results = results.rename(columns={'New Batter': 'Batsman'})
 
-            st.dataframe(results.round(2))
+            st.dataframe(results.round(2), use_container_width=True)
         else:
             results = results.rename(columns={'New Batter': 'Batsman'})
 
             results = results.sort_values(by=['Runs'], ascending=False)
-            st.dataframe(results.round(2))
+            st.dataframe(results.round(2), use_container_width=True)
     else:
         data = load_data('toughwickets.csv')
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
@@ -503,12 +503,12 @@ def main():
                 results = results[results['Bowler'].isin(temp)]
                 results = results.rename(columns={'Bowler': 'Bowler'})
 
-                st.dataframe(results.round(2))
+                st.dataframe(results.round(2), use_container_width=True)
             else:
                 results = results.rename(columns={'Bowler': 'Bowler'})
 
                 results = results.sort_values(by=['Wickets'], ascending=False)
-                st.dataframe(results.round(2))
+                st.dataframe(results.round(2), use_container_width=True)
 
 
 
