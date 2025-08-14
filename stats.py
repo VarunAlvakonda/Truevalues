@@ -329,7 +329,7 @@ def bowlmatchfactor(bowling,criteria):
 
 
 
-@st.sidebar.cache_data
+@st.cache_data
 def load_data(filename):
     data = pd.read_csv(filename, low_memory=False)
     return data
