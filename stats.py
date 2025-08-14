@@ -8,7 +8,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results4 = data[data['Batting Position'] >= 0]
     final_results4 = data
 
-# final_results4 = final_results4[final_results4['Wickets at Entry'] <= 4]
+    # final_results4 = final_results4[final_results4['Wickets at Entry'] <= 4]
     # final_results4 = final_results4[final_results4['New Batter'].isin(players)]
     final_results4['I'] = 1
     final_results4 = final_results4[~final_results4['Team'].isin(['ICC'])]
@@ -23,17 +23,42 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results4.loc[(final_results4['Runs'] >= 50) & (final_results4['Runs'] <= 99), 'Fifties'] = 1
     final_results4.loc[(final_results4['Runs'] >= 100), 'Centuries'] = 1
     final_results4.loc[(final_results4['BF'] > 0), 'RunswithBalls'] = final_results4['Runs']
-    choice4 = st.multiselect('Keeper:', ['Yes'])
 
     final_results5 = final_results4
-    if choice4:
-        final_results5 = final_results5[final_results5['IsKeeper']=='Yes']
-    choice4 = st.multiselect('Opposition:', data['Opposition'].unique())
-    if choice4:
-        final_results5 = final_results5[final_results5['Opposition'].isin(choice4)]
     choice4 = st.multiselect('Batting Position:', [1,2,3,4,5,6,7,8,9,10,11,12])
     if choice4:
         final_results5 = final_results5[final_results5['Batting Position'].isin(choice4)]
+
+    # Compute EntryBalls range
+    min_age = int(final_results5['Age'].min())
+    max_age = int(final_results5['Age'].max())
+    # Slider for EntryBalls
+    age_rage = st.slider(
+        "Choose Age Range:",
+        min_value=min_age,
+        max_value=max_age,
+        value=(min_age, max_age)
+    )
+
+    # Apply filter only if slider is changed from default
+    if age_rage != (min_age, max_age):
+        final_results5 = final_results5[
+            (final_results5['Age'] >= age_rage[0]) &
+            (final_results5['Age'] <= age_rage[1])
+            ]
+
+    choice4 = st.multiselect('Host Country:', data['Host Country'].unique())
+    if choice4:
+        final_results5 = final_results5[final_results5['Host Country'].isin(choice4)]
+
+    choice4 = st.multiselect('Opposition:', data['Opposition'].unique())
+    if choice4:
+        final_results5 = final_results5[final_results5['Opposition'].isin(choice4)]
+
+    choice4 = st.multiselect('Keeper:', ['Yes'])
+    if choice4:
+        final_results5 = final_results5[final_results5['IsKeeper']=='Yes']
+
     choice4 = st.multiselect('Result:', data['Result'].unique())
     if choice4:
         final_results5 = final_results5[final_results5['Result'].isin(choice4)]
@@ -54,9 +79,9 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
 
         final_results5 = final_results5[
-                (final_results5['Runs at Entry'] >= entry_range[0]) &
-                (final_results5['Runs at Entry'] <= entry_range[1])
-                ]
+            (final_results5['Runs at Entry'] >= entry_range[0]) &
+            (final_results5['Runs at Entry'] <= entry_range[1])
+            ]
 
         min_entry = 0
         max_entry = int(final_results5['Wickets at Entry'].max())
@@ -70,9 +95,9 @@ def matchfactor(data,criteria,Position,typeoffactor):
         )
 
         final_results5 = final_results5[
-                (final_results5['Wickets at Entry'] >= entry_range[0]) &
-                (final_results5['Wickets at Entry'] <= entry_range[1])
-                ]
+            (final_results5['Wickets at Entry'] >= entry_range[0]) &
+            (final_results5['Wickets at Entry'] <= entry_range[1])
+            ]
 
     # Compute EntryBalls range
     min_entry = 0
@@ -94,6 +119,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
             (final_results5['EntryBalls'] >= entry_range[0]) &
             (final_results5['EntryBalls'] <= entry_range[1])
             ]
+
 
     df_match_totals = final_results5.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
         Inns=('I', 'sum'),
@@ -335,7 +361,7 @@ def main():
         choice5 = st.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'Opposition','year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway',])
         choice2 = st.selectbox('Individual Player or Everyone:', ['Individual', 'Everyone'])
         # choice3 = st.multiselect('Home or Away:', ['Home', 'Away'])
-        choice4 = st.multiselect('Host Country:', data['Host Country'].unique())
+        # choice4 = st.multiselect('Host Country:', data['Host Country'].unique())
         # choice5 = st.multiselect('Team:', data['Team'].unique())
     #    Filtering data based on the user's Date selection
 
@@ -352,8 +378,8 @@ def main():
             # name = st.selectbox('Choose the Player From the list', data['striker'].unique())
         # if choice3:
         #     filtered_data2 = filtered_data2[filtered_data2['HomeorAway'].isin(choice3)]
-        if choice4:
-            filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
+        # if choice4:
+        #     filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
         filtered_data2 = filtered_data2.rename(columns={'Result2':'Result or Draw'})
