@@ -100,26 +100,27 @@ def matchfactor(data,criteria,Position,typeoffactor):
             (final_results5['Wickets at Entry'] <= entry_range[1])
             ]
 
-    if int(final_results5['year'].max())<1999:
-        # Compute EntryBalls range
-        min_entry = 0
-        max_entry = int(final_results5['EntryBalls'].max())
-        if max_entry == 0:
-            max_entry = 1
-        # Slider for EntryBalls
-        entry_range = st.sidebar.slider(
-            "Choose Entry Over (only available from 1999) :",
-            min_value=min_entry,
-            max_value=max_entry,
-            value=(min_entry, max_entry)
-        )
-        # Apply filter only if slider is changed from default
-        if entry_range != (min_entry, max_entry):
-            final_results5 = final_results5[final_results5['year']>=1999]
-            final_results5 = final_results5[
-                (final_results5['EntryBalls'] >= entry_range[0]) &
-                (final_results5['EntryBalls'] <= entry_range[1])
-                ]
+    # Compute EntryBalls range
+    min_entry = 0
+    max_entry = int(final_results5['EntryBalls'].max())
+    if max_entry == 0:
+        max_entry = 1
+    # Slider for EntryBalls
+    entry_range = st.sidebar.slider(
+        "Choose Entry Over (only available from 1999) :",
+        min_value=min_entry,
+        max_value=max_entry,
+        value=(min_entry, max_entry)
+    )
+
+
+    # Apply filter only if slider is changed from default
+    if entry_range != (min_entry, max_entry):
+        final_results5 = final_results5[final_results5['year']>=1999]
+        final_results5 = final_results5[
+            (final_results5['EntryBalls'] >= entry_range[0]) &
+            (final_results5['EntryBalls'] <= entry_range[1])
+            ]
 
 
     df_match_totals = final_results5.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
