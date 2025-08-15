@@ -103,7 +103,8 @@ def matchfactor(data,criteria,Position,typeoffactor):
     # Compute EntryBalls range
     min_entry = 0
     max_entry = int(final_results5['EntryBalls'].max())
-    print(min_entry, max_entry)
+    if max_entry == 0:
+        max_entry = 1
     # Slider for EntryBalls
     entry_range = st.sidebar.slider(
         "Choose Entry Over (only available from 1999) :",
