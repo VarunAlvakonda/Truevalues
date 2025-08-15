@@ -343,8 +343,8 @@ def main():
         factorchoice = st.sidebar.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team and Opposition','Team'])
         start_pos = st.sidebar.slider('Select Batting Position Baseline:', min_value=1,max_value=12)
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
-        # valid_dates = data['Start Date'].dropna()
-        valid_dates = data
+        valid_dates = data['Start Date'].dropna()
+        # valid_dates = data
         import datetime
         if not valid_dates.empty:
             min_dt = valid_dates.min().date()
