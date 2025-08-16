@@ -345,6 +345,7 @@ def main():
         data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
         valid_dates = data['Start Date'].dropna()
         # valid_dates = data
+
         import datetime
         if not valid_dates.empty:
             min_dt = valid_dates.min().date()
