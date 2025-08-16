@@ -209,10 +209,10 @@ def matchfactor(data,criteria,Position,typeoffactor):
     # final_results5 = final_results5[final_results5['New Batter'].isin(names)]
     final_results5 = final_results5.drop(columns=['mean_ave', 'mean_sr','RunswithBalls','Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff','ball_diff','runswithballs_diff'])
     run = max((final_results5['Runs']).astype(int))
-    start_runs, end_runs = st.sidebar.slider('Select Minimum Runs:', min_value=1, max_value=run, value=(1, run))
+    start_runs, end_runs = st.sidebar.slider('Select Minimum Runs:', min_value=0, max_value=run, value=(1, run))
     final_results5 = final_results5[(final_results5['Runs'] >= start_runs) & (final_results5['Runs'] <= end_runs)]
     balls = max((final_results5['Balls']).astype(int))
-    start_balls, end_balls = st.sidebar.slider('Select Minimum Balls:', min_value=1, max_value=balls, value=(1, balls))
+    start_balls, end_balls = st.sidebar.slider('Select Minimum Balls:', min_value=0, max_value=balls, value=(1, balls))
     final_results5 = final_results5[(final_results5['Balls'] >= start_balls) & (final_results5['Balls'] <= end_balls)]
     choice4 = st.sidebar.multiselect('Team:', data['Team'].unique())
     if choice4:
