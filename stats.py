@@ -62,6 +62,8 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
     choice4 = st.sidebar.multiselect('Result:', data['Result'].unique())
     if choice4:
+        trumper_results = data[data['New Batter'] == 'VT Trumper']['Result'].unique()
+        print("Trumper's results:", trumper_results)
         final_results5 = final_results5[final_results5['Result'].isin(choice4)]
 
 
