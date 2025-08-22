@@ -58,6 +58,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
     choice4 = st.sidebar.multiselect('Keeper:', ['Yes','No'])
     if choice4:
+        print(choice4)
         if choice4 == 'Yes':
             final_results5 = final_results5[final_results5['IsKeeper']=='Yes']
         else:
