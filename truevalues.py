@@ -193,6 +193,16 @@ def apply_dl_vectorized(df, balls_col, wickets_param, alpha_p, beta_p):
 def load_data(filename):
     print("Loading data from parquet...")
     data = load_data2(filename)
+    # Check memory usage
+    memory_usage_mb = data.memory_usage(deep=True).sum() / 1024 / 1024
+    print(f"DataFrame memory usage: {memory_usage_mb:.2f} MB")
+
+    # More detailed breakdown
+    print(f"Shape: {data.shape}")
+    print(f"Memory usage by column:")
+    for col in data.columns:
+        col_memory = data[col].memory_usage(deep=True) / 1024 / 1024
+        print(f"  {col}: {col_memory:.2f} MB")
     print(data.columns)
     # # Vectorized operations
     # data['B'] = np.where(data['Notes'] == 'W', 0, 1)
@@ -332,7 +342,7 @@ def main():
     st.sidebar.title('True Values')
 
     # Load data with caching
-    allt20s = load_data('T20DataT20Leagues.parquet')  # Changed to parquet
+    allt20s = load_data('T20DataT20Leagues_optimized.parquet')  # Changed to parquet
 
     selected_leagues = st.sidebar.multiselect('Choose leagues:', allt20s['CompName'].unique())
 
