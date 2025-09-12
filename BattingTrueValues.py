@@ -343,8 +343,8 @@ def main():
         options = ['Overall Stats', 'Season By Season']
         choice = st.sidebar.selectbox('Select your option:', options)
         choice2 = st.sidebar.selectbox('Individual Player or Everyone:', ['Individual', 'Everyone'])
-        data['Start Date'] = pd.to_datetime(data['Date'], errors='coerce')
-        valid_dates = data['Start Date'].dropna()
+        data['Date'] = pd.to_datetime(data['Date'], errors='coerce')
+        valid_dates = data['Date'].dropna()
         # valid_dates = data
         import datetime
         if not valid_dates.empty:
