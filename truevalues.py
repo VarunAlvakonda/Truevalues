@@ -334,7 +334,7 @@ def main():
 
 
     # Load data with caching
-    allt20s = load_data('T20Data.parquet')  # Changed to parquet
+    allt20s = load_data('T20Dataoptimized.csv')  # Changed to parquet
 
     selected_leagues = st.sidebar.multiselect('Choose leagues:', allt20s['CompName'].unique())
 
