@@ -170,7 +170,7 @@ def analyze_data_for_year3(year2, data2):
 @st.cache_data
 def load_data2(filename):
 
-    return pd.read_parquet(filename)  # Changed to parquet
+    return pd.read_csv(filename)  # Changed to parquet
 
 # Vectorized DL model application
 def apply_dl_vectorized(df, balls_col, wickets_param, alpha_p, beta_p):
