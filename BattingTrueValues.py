@@ -355,12 +355,12 @@ def main():
             min_dt = datetime.date(2000, 1, 1)
             max_dt = datetime.date(2030, 1, 1)
 
-        start_date = st.sidebar.date_input("Start date", min_value=min_dt, max_value=max_dt, value=min_dt)
-        end_date = st.sidebar.date_input("End date", min_value=min_dt, max_value=max_dt, value=max_dt)
+        # start_date = st.sidebar.date_input("Start date", min_value=min_dt, max_value=max_dt, value=min_dt)
+        # end_date = st.sidebar.date_input("End date", min_value=min_dt, max_value=max_dt, value=max_dt)
 
         # # User inputs for date range
-        # start_date = st.sidebar.date_input('Start date', data['Date'].min())
-        # end_date = st.sidebar.date_input('End date', data['Date'].max())
+        start_date = st.sidebar.date_input('Start date', data['Date'].min())
+        end_date = st.sidebar.date_input('End date', data['Date'].max())
 
         # Filtering data based on the user's date selection
         if start_date > end_date:
