@@ -366,7 +366,9 @@ def main():
         if choice2 == 'Individual':
             players = data['Batter'].unique()
             player = st.sidebar.multiselect("Select Players:", players)
-
+        choice3 = st.sidebar.multiselect('Pace or Spin:', ['Pace', 'Spin'])
+        if choice3:
+            filtered_data2 = filtered_data2[filtered_data2['BowlCat'].isin(choice3)]
         all_data = []
 
         # Process years with better progress indication
