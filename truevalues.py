@@ -4,6 +4,7 @@ import streamlit as st
 from scipy.optimize import curve_fit
 
 place = 'Venue_x'
+place = 'Country'
 type = 'PhaseofSeason'
 type = 'BowlCat'
 type = 'entryphase'
