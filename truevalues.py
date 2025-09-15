@@ -334,112 +334,112 @@ def main():
 
 
     # Load data with caching
-    data = load_data('T20Dataoptimized.parquet')  # Changed to parquet
-    # selected_leagues = st.sidebar.multiselect('Choose leagues:', allt20s['CompName'].unique())
+    allt20s = load_data('T20DataT20Leagues_optimized.parquet')  # Changed to parquet
+    selected_leagues = st.sidebar.multiselect('Choose leagues:', allt20s['CompName'].unique())
 
-    # if selected_leagues:
-    # data = allt20s[allt20s['CompName'].isin(selected_leagues)]
+    if selected_leagues:
+        data = allt20s[allt20s['CompName'].isin(selected_leagues)]
 
-    # Selectors for user input
-    options = ['Overall Stats', 'Season By Season']
-    choice = st.sidebar.selectbox('Select your option:', options)
-    choice2 = st.sidebar.selectbox('Individual Player or Everyone:', ['Individual', 'Everyone'])
+        # Selectors for user input
+        options = ['Overall Stats', 'Season By Season']
+        choice = st.sidebar.selectbox('Select your option:', options)
+        choice2 = st.sidebar.selectbox('Individual Player or Everyone:', ['Individual', 'Everyone'])
 
-    # User inputs for date range
-    start_date = st.sidebar.date_input('Start date', data['Date'].min())
-    end_date = st.sidebar.date_input('End date', data['Date'].max())
+        # User inputs for date range
+        start_date = st.sidebar.date_input('Start date', data['Date'].min())
+        end_date = st.sidebar.date_input('End date', data['Date'].max())
 
-    # Filtering data based on the user's date selection
-    if start_date > end_date:
-        st.sidebar.error('Error: End date must be greater than start date.')
-        return
+        # Filtering data based on the user's date selection
+        if start_date > end_date:
+            st.sidebar.error('Error: End date must be greater than start date.')
+            return
 
-    start_over, end_over = st.sidebar.slider('Select Overs Range:', min_value=1, max_value=20, value=(1, 20))
+        start_over, end_over = st.sidebar.slider('Select Overs Range:', min_value=1, max_value=20, value=(1, 20))
 
-    # Vectorized filtering
-    filtered_data = data[(data['over'] >= start_over) & (data['over'] <= end_over)]
-    filtered_data2 = filtered_data[
-        (filtered_data['Date'] >= pd.to_datetime(start_date)) &
-        (filtered_data['Date'] <= pd.to_datetime(end_date))
-        ]
+        # Vectorized filtering
+        filtered_data = data[(data['over'] >= start_over) & (data['over'] <= end_over)]
+        filtered_data2 = filtered_data[
+            (filtered_data['Date'] >= pd.to_datetime(start_date)) &
+            (filtered_data['Date'] <= pd.to_datetime(end_date))
+            ]
 
-    if choice2 == 'Individual':
-        players = data['Batter'].unique()
-        player = st.sidebar.multiselect("Select Players:", players)
-
-    all_data = []
-
-    # Process years with better progress indication
-    unique_years = sorted(filtered_data2['year'].unique())
-
-    for i, year in enumerate(unique_years):
-        results = analyze_data_for_year3(year, filtered_data2)
-        all_data.append(results)
-
-    combined_data = pd.concat(all_data, ignore_index=True)
-
-    # Optimized final aggregation
-    agg_cols = ['I', 'Runs Scored', 'BF', 'Out', 'Expected Runs', 'Expected Outs']
-    truevalues = combined_data.groupby(['Player'])[agg_cols].sum().reset_index()
-    final_results = truemetrics(truevalues)
-
-    final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
-
-    if choice == 'Overall Stats':
         if choice2 == 'Individual':
-            # Efficient player filtering
-            valid_players = set(final_results['Player'].unique())
-            temp = [p for p in player if p in valid_players]
+            players = data['Batter'].unique()
+            player = st.sidebar.multiselect("Select Players:", players)
 
-            # Show invalid players
-            invalid_players = [p for p in player if p not in valid_players]
-            for invalid_player in invalid_players:
-                st.sidebar.subheader(f'{invalid_player} not in this list')
+        all_data = []
 
-            if temp:
-                final_results = final_results[final_results['Player'].isin(temp)]
+        # Process years with better progress indication
+        unique_years = sorted(filtered_data2['year'].unique())
+
+        for i, year in enumerate(unique_years):
+            results = analyze_data_for_year3(year, filtered_data2)
+            all_data.append(results)
+
+        combined_data = pd.concat(all_data, ignore_index=True)
+
+        # Optimized final aggregation
+        agg_cols = ['I', 'Runs Scored', 'BF', 'Out', 'Expected Runs', 'Expected Outs']
+        truevalues = combined_data.groupby(['Player'])[agg_cols].sum().reset_index()
+        final_results = truemetrics(truevalues)
 
         final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
-        drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
-        final_results = final_results.drop(columns=drop_cols)
-        # Clean up columns for output
-        run = max((final_results['Runs Scored']).astype(int))
 
-        start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
-        final_results = final_results[(final_results['Runs Scored'] >= start_runs) & (final_results['Runs Scored'] <= end_runs)]
-        balls = max((final_results['BF']).astype(int))
-        start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
+        if choice == 'Overall Stats':
+            if choice2 == 'Individual':
+                # Efficient player filtering
+                valid_players = set(final_results['Player'].unique())
+                temp = [p for p in player if p in valid_players]
 
-        final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
-        st.dataframe(final_results.round(2))
+                # Show invalid players
+                invalid_players = [p for p in player if p not in valid_players]
+                for invalid_player in invalid_players:
+                    st.sidebar.subheader(f'{invalid_player} not in this list')
 
-    elif choice == 'Season By Season':
-        if choice2 == 'Individual':
-            # Efficient player filtering
-            valid_players = set(combined_data['Player'].unique())
-            temp = [p for p in player if p in valid_players]
+                if temp:
+                    final_results = final_results[final_results['Player'].isin(temp)]
 
-            # Show invalid players
-            invalid_players = [p for p in player if p not in valid_players]
-            for invalid_player in invalid_players:
-                st.sidebar.subheader(f'{invalid_player} not in this list')
+            final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
+            drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
+            final_results = final_results.drop(columns=drop_cols)
+            # Clean up columns for output
+            run = max((final_results['Runs Scored']).astype(int))
 
-            if temp:
-                combined_data = combined_data[combined_data['Player'].isin(temp)]
+            start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
+            final_results = final_results[(final_results['Runs Scored'] >= start_runs) & (final_results['Runs Scored'] <= end_runs)]
+            balls = max((final_results['BF']).astype(int))
+            start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
 
-        combined_data = combined_data.sort_values(by=['Runs Scored'], ascending=False)
-        drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
-        combined_data = combined_data.drop(columns=drop_cols)
-        run = max((final_results['Runs Scored']).astype(int))
+            final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
+            st.dataframe(final_results.round(2))
 
-        start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
-        final_results = final_results[(final_results['Runs Scored'] >= start_runs) & (final_results['Runs Scored'] <= end_runs)]
-        balls = max((final_results['BF']).astype(int))
-        start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
+        elif choice == 'Season By Season':
+            if choice2 == 'Individual':
+                # Efficient player filtering
+                valid_players = set(combined_data['Player'].unique())
+                temp = [p for p in player if p in valid_players]
 
-        final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
-        st.dataframe(final_results.round(2))
-        st.dataframe(combined_data)
+                # Show invalid players
+                invalid_players = [p for p in player if p not in valid_players]
+                for invalid_player in invalid_players:
+                    st.sidebar.subheader(f'{invalid_player} not in this list')
+
+                if temp:
+                    combined_data = combined_data[combined_data['Player'].isin(temp)]
+
+            combined_data = combined_data.sort_values(by=['Runs Scored'], ascending=False)
+            drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
+            combined_data = combined_data.drop(columns=drop_cols)
+            run = max((final_results['Runs Scored']).astype(int))
+
+            start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
+            final_results = final_results[(final_results['Runs Scored'] >= start_runs) & (final_results['Runs Scored'] <= end_runs)]
+            balls = max((final_results['BF']).astype(int))
+            start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
+
+            final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
+            st.dataframe(final_results.round(2))
+            st.dataframe(combined_data)
 
 # Run the main function
 if __name__ == '__main__':
