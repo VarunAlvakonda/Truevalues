@@ -193,7 +193,7 @@ def apply_dl_vectorized(df, balls_col, wickets_param, alpha_p, beta_p):
 @st.cache_data
 def load_data(filename):
     print("Loading data from parquet...")
-    data = load_data2(filename)
+    data = pd.read_parquet(filename)
     print(data.columns)
     # # Vectorized operations
     # data['B'] = np.where(data['Notes'] == 'W', 0, 1)
@@ -334,7 +334,7 @@ def main():
 
 
     # Load data with caching
-    allt20s = load_data('T20Dataoptimized.csv')  # Changed to parquet
+    allt20s = load_data('T20Dataoptimized.parquet')  # Changed to parquet
 
     selected_leagues = st.sidebar.multiselect('Choose leagues:', allt20s['CompName'].unique())
 
