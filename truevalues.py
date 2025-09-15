@@ -381,6 +381,10 @@ def main():
         choice3 = st.sidebar.multiselect('Pace or Spin:', ['Pace', 'Spin'])
         if choice3:
             filtered_data2 = filtered_data2[filtered_data2['BowlCat'].isin(choice3)]
+
+        choice4 = st.sidebar.multiselect('Select Innings:', [1, 2])
+        if choice4:
+            filtered_data2 = filtered_data2[filtered_data2['TeamInns'].isin(choice4)]
         all_data = []
 
         # Process years with better progress indication
