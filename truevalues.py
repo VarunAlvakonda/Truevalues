@@ -164,15 +164,7 @@ def analyze_data_for_year3(year2, data2):
     final_results2 = pd.merge(inns2, final_results, on='Player', how='left')
     final_results3 = pd.merge(players_years, final_results2, on='Player', how='left')
     final_results4 = pd.merge(final_results3, analysis_results, on='Player', how='left')
-    # Clean up columns for output
-    run = max((final_results4['Runs Scored']).astype(int))
 
-    start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
-    final_results4 = final_results4[(final_results4['Runs Scored'] >= start_runs) & (final_results4['Runs Scored'] <= end_runs)]
-    balls = max((final_results4['BF']).astype(int))
-    start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
-
-    final_results4 = final_results4[(final_results4['BF'] >= start_balls) & (final_results4['BF'] <= end_balls)]
     return final_results4.round(2)
 
 @st.cache_data
@@ -410,6 +402,15 @@ def main():
         final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
         drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
         final_results = final_results.drop(columns=drop_cols)
+        # Clean up columns for output
+        run = max((final_results['Runs Scored']).astype(int))
+
+        start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
+        final_results = final_results[(final_results['Runs Scored'] >= start_runs) & (final_results['Runs Scored'] <= end_runs)]
+        balls = max((final_results['BF']).astype(int))
+        start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
+
+        final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
         st.dataframe(final_results.round(2))
 
     elif choice == 'Season By Season':
@@ -429,6 +430,15 @@ def main():
         combined_data = combined_data.sort_values(by=['Runs Scored'], ascending=False)
         drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
         combined_data = combined_data.drop(columns=drop_cols)
+        run = max((final_results['Runs Scored']).astype(int))
+
+        start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
+        final_results = final_results[(final_results['Runs Scored'] >= start_runs) & (final_results['Runs Scored'] <= end_runs)]
+        balls = max((final_results['BF']).astype(int))
+        start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
+
+        final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
+        st.dataframe(final_results.round(2))
         st.dataframe(combined_data)
 
 # Run the main function
