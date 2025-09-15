@@ -346,8 +346,20 @@ def main():
         choice2 = st.sidebar.selectbox('Individual Player or Everyone:', ['Individual', 'Everyone'])
 
         # User inputs for date range
-        start_date = st.sidebar.date_input('Start date', data['Date'].min())
-        end_date = st.sidebar.date_input('End date', data['Date'].max())
+        # start_date = st.sidebar.date_input('Start date', data['Date'].min())
+        # end_date = st.sidebar.date_input('End date', data['Date'].max())
+        valid_dates = data['Date'].dropna()
+        # valid_dates = data
+        import datetime
+        if not valid_dates.empty:
+            min_dt = valid_dates.min().date()
+            max_dt = valid_dates.max().date()
+        else:
+            min_dt = datetime.date(2000, 1, 1)
+            max_dt = datetime.date(2030, 1, 1)
+
+        start_date = st.sidebar.date_input("Start date", min_value=min_dt, max_value=max_dt, value=min_dt)
+        end_date = st.sidebar.date_input("End date", min_value=min_dt, max_value=max_dt, value=max_dt)
 
         # Filtering data based on the user's date selection
         if start_date > end_date:
