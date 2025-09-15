@@ -4,7 +4,7 @@ import streamlit as st
 from scipy.optimize import curve_fit
 
 place = 'Venue_x'
-# place = 'Country'
+place = 'Country'
 type = 'PhaseofSeason'
 type = 'BowlCat'
 type = 'entryphase'
@@ -165,7 +165,14 @@ def analyze_data_for_year3(year2, data2):
     final_results3 = pd.merge(players_years, final_results2, on='Player', how='left')
     final_results4 = pd.merge(final_results3, analysis_results, on='Player', how='left')
     # Clean up columns for output
+    run = max((final_results4['Runs Scored']).astype(int))
 
+    start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
+    final_results4 = final_results4[(final_results4['Runs Scored'] >= start_runs) & (final_results4['Runs Scored'] <= end_runs)]
+    balls = max((final_results4['BF']).astype(int))
+    start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
+
+    final_results4 = final_results4[(final_results4['BF'] >= start_balls) & (final_results4['BF'] <= end_balls)]
     return final_results4.round(2)
 
 @st.cache_data
