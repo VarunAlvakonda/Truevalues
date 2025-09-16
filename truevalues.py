@@ -76,7 +76,7 @@ def analyze_data_for_year2(data):
 @st.cache_data
 def analyze_data_for_year3(year2, data2):
     # Early filtering
-    combineddata = data2[(data2['TeamInns'] < 3) & (data2['year'] == year2)].copy()
+    combineddata = data2[(data2['TeamInns'] < 3) & (data2['year'] == year2)]
 
     # Optimized innings calculation
     inns = combineddata.groupby(['Batter', 'MatchNum'])[['Runs']].sum().reset_index()
@@ -86,13 +86,13 @@ def analyze_data_for_year3(year2, data2):
     inns['CI'] = inns.groupby(['Batter'])[['I']].cumsum()
 
     # Vectorized entry point analysis
-    analysis_results = analyze_data_for_year2(combineddata)
-    analysis_results.columns = ['Player', 'Median Entry Point']
+    # analysis_results = analyze_data_for_year2(combineddata)
+    # analysis_results.columns = ['Player', 'Median Entry Point']
 
     # Optimized dismissal data processing
     valid = ['X','WX']
     dismissed_mask = combineddata['Notes'].isin(valid)
-    dismissed_data = combineddata[dismissed_mask].copy()
+    dismissed_data = combineddata[dismissed_mask]
     dismissed_data['Out'] = 1
 
     # More efficient merge
@@ -163,9 +163,9 @@ def analyze_data_for_year3(year2, data2):
 
     final_results2 = pd.merge(inns2, final_results, on='Player', how='left')
     final_results3 = pd.merge(players_years, final_results2, on='Player', how='left')
-    final_results4 = pd.merge(final_results3, analysis_results, on='Player', how='left')
+    # final_results4 = pd.merge(final_results3, analysis_results, on='Player', how='left')
 
-    return final_results4.round(2)
+    return final_results3.round(2)
 
 def truemetricsbowling(truevalues):
     # Avoid division by zero with vectorized operations
@@ -194,7 +194,7 @@ def analyze_data_for_year6(year2, data2):
     print(f"Processing year {year2} (bowling analyze_6)...")
 
     # Early filtering
-    combineddata = data2[(data2['TeamInns'] < 3) & (data2['year'] == year2)].copy()
+    combineddata = data2[(data2['TeamInns'] < 3) & (data2['year'] == year2)]
 
     # Optimized innings calculation
     inns = combineddata.groupby(['Bowlers','MatchNum'], observed=True)[['Runs']].sum().reset_index()
@@ -212,7 +212,7 @@ def analyze_data_for_year6(year2, data2):
     dismissed_mask = (combineddata['Notes'].isin(valid) &
                       (combineddata['BowlDis'] == 'Y') &
                       (combineddata['LongDis'] != 'run out'))
-    dismissed_data = combineddata[dismissed_mask].copy()
+    dismissed_data = combineddata[dismissed_mask]
     dismissed_data['Out'] = 1
 
     # More efficient merge
