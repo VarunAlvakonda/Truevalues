@@ -511,6 +511,11 @@ def main():
             filtered_data2 = filtered_data2[filtered_data2['TeamInns'].isin(choice4)]
         all_data = []
 
+        balls = max((filtered_data2['BatterBalls']).astype(int))
+        start_balls, end_balls = st.sidebar.slider('Select Balls Faced By Batter in Innings:', min_value=1, max_value=balls, value=(1, balls))
+
+        filtered_data2 = filtered_data2[(filtered_data2['BatterBalls'] >= start_balls) & (filtered_data2['BatterBalls'] <= end_balls)]
+
         # Process years with better progress indication
         unique_years = sorted(filtered_data2['year'].unique())
 
