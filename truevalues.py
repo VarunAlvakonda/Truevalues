@@ -114,8 +114,8 @@ def analyze_data_for_year3(year2, data2):
     over_outs = dismissed_data.groupby(groupby_cols_over)[['Out']].sum().reset_index()
     over_outs.columns = ['TeamInns', place, 'Over', 'Outs']
 
-    player_runs = combineddata.groupby(groupby_cols_player)[['Runs', 'B']].sum().reset_index()
-    player_runs.columns = ['Player', 'TeamInns', place, 'Over', 'Runs Scored', 'BF']
+    player_runs = combineddata.groupby(groupby_cols_player)[['Runs', 'B','Impact']].sum().reset_index()
+    player_runs.columns = ['Player', 'TeamInns', place, 'Over', 'Runs Scored', 'BF','Impact']
 
     over_runs = combineddata.groupby(groupby_cols_over)[['Runs', 'B']].sum().reset_index()
     over_runs.columns = ['TeamInns', place, 'Over', 'Runs', 'B']
@@ -152,7 +152,7 @@ def analyze_data_for_year3(year2, data2):
                                    labels=ball_labels2, include_lowest=True, right=True)
 
     # Optimized aggregation
-    agg_cols = ['Runs Scored', 'BF', 'Out','Expected Runs', 'Expected Outs']
+    agg_cols = ['Runs Scored', 'BF', 'Out','Expected Runs', 'Expected Outs','Impact']
     truevalues = combined_df3.groupby(['Player'], observed=True)[agg_cols].sum().reset_index()
 
     final_results = truemetrics(truevalues)
@@ -233,8 +233,8 @@ def analyze_data_for_year6(year2, data2):
     over_outs = dismissed_data.groupby([place,'over'], observed=True)[['Out']].sum().reset_index()
     over_outs.columns = [place,'Over', 'Outs']
 
-    player_runs = combineddata.groupby(['Bowlers', place,'over'], observed=True)[['RC', 'B']].sum().reset_index()
-    player_runs.columns = ['Player', place, 'Over', 'RC', 'BF']
+    player_runs = combineddata.groupby(['Bowlers', place,'over'], observed=True)[['RC', 'B','Impact']].sum().reset_index()
+    player_runs.columns = ['Player', place, 'Over', 'RC', 'BF','Impact']
 
     over_runs = combineddata.groupby([place,'over'], observed=True)[['RC', 'B']].sum().reset_index()
     over_runs.columns = [place,'Over', 'Runs', 'B']
@@ -271,7 +271,7 @@ def analyze_data_for_year6(year2, data2):
                                    labels=ball_labels2, include_lowest=True, right=True)
 
     # Optimized aggregation
-    agg_cols = ['RC', 'BF', 'Out','Expected Runs', 'Expected Outs']
+    agg_cols = ['RC', 'BF', 'Out','Expected Runs', 'Expected Outs','Impact']
     truevalues = combined_df3.groupby(['Player'], observed=True)[agg_cols].sum().reset_index()
 
     final_results = truemetricsbowling(truevalues)
@@ -530,12 +530,12 @@ def main():
 
         if choice0 == 'Batting':
             # Optimized final aggregation
-            agg_cols = ['I', 'Runs Scored', 'BF', 'Out', 'Expected Runs', 'Expected Outs']
+            agg_cols = ['I', 'Runs Scored', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
             truevalues = combined_data.groupby(['Player'])[agg_cols].sum().reset_index()
             final_results = truemetrics(truevalues)
             final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
         else:
-            agg_cols = ['I', 'RC', 'BF', 'Out', 'Expected Runs', 'Expected Outs']
+            agg_cols = ['I', 'RC', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
             truevalues = combined_data.groupby(['Player','Type'], observed=True)[agg_cols].sum().reset_index()
             final_results = truemetricsbowling(truevalues)
             final_results = final_results.sort_values(by=['Out'], ascending=False)
