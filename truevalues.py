@@ -461,6 +461,7 @@ def main():
         data = allt20s[allt20s['CompName'].isin(selected_leagues)]
         choice0 = st.sidebar.selectbox('Batting Or Bowling:', ['Batting', 'Bowling'])
 
+
         # Selectors for user input
         options = ['Overall Stats', 'Season By Season']
         choice = st.sidebar.selectbox('Select your option:', options)
@@ -487,13 +488,11 @@ def main():
             st.sidebar.error('Error: End date must be greater than start date.')
             return
 
-        start_over, end_over = st.sidebar.slider('Select Overs Range:', min_value=1, max_value=20, value=(1, 20))
 
         # Vectorized filtering
-        filtered_data = data[(data['over'] >= start_over) & (data['over'] <= end_over)]
-        filtered_data2 = filtered_data[
-            (filtered_data['Date'] >= pd.to_datetime(start_date)) &
-            (filtered_data['Date'] <= pd.to_datetime(end_date))
+        filtered_data2 = data[
+            (data['Date'] >= pd.to_datetime(start_date)) &
+            (data['Date'] <= pd.to_datetime(end_date))
             ]
 
         if choice2 == 'Individual':
@@ -509,6 +508,11 @@ def main():
         choice4 = st.sidebar.multiselect('Select Innings:', [1, 2])
         if choice4:
             filtered_data2 = filtered_data2[filtered_data2['TeamInns'].isin(choice4)]
+
+        start_over, end_over = st.sidebar.slider('Select Overs Range:', min_value=1, max_value=20, value=(1, 20))
+        filtered_data2 = filtered_data2[(filtered_data2['over'] >= start_over) & (filtered_data2['over'] <= end_over)]
+
+
         all_data = []
 
         # balls = max((filtered_data2['BatterBalls']).astype(int))
