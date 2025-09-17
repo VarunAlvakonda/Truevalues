@@ -452,12 +452,9 @@ def load_data(filename):
 def main():
     st.sidebar.title('True Values')
 
-    select_type = st.sidebar.multiselect('Choose Mens or Womens Cricket:', ['Men','Women'])
-    if select_type == 'Men':
-        # Load data with caching
-        allt20s = load_data('T20DataT20Leagues_optimized.parquet')  # Changed to parquet
-    else:
-        allt20s = load_data('WT20DataT20Leagues_optimized.parquet')  # Changed to parquet
+
+    # Load data with caching
+    allt20s = load_data('T20DataT20Leagues_optimized.parquet')  # Changed to parquet
     selected_leagues = st.sidebar.multiselect('Choose leagues:', allt20s['CompName'].unique())
 
     if selected_leagues:
@@ -468,7 +465,7 @@ def main():
         # Selectors for user input
         options = ['Overall Stats', 'Season By Season']
         choice = st.sidebar.selectbox('Select your option:', options)
-        selected_leagues = st.sidebar.multiselect('Choose leagues:', allt20s['CompName'].unique())
+        choice2 = st.sidebar.selectbox('Individual Player or Everyone:', ['Individual', 'Everyone'])
 
         # User inputs for date range
         # start_date = st.sidebar.date_input('Start date', data['Date'].min())
