@@ -459,6 +459,7 @@ def main():
 
     if selected_leagues:
         data = allt20s[allt20s['CompName'].isin(selected_leagues)]
+        print(data.columns)
         choice0 = st.sidebar.selectbox('Batting Or Bowling:', ['Batting', 'Bowling'])
 
 
