@@ -24,7 +24,7 @@ def truemetrics(truevalues):
     truevalues['True SR'] = (truevalues['SR'] - truevalues['Expected SR'])
 
     truevalues['Out Ratio'] = (truevalues['Expected Outs'] / truevalues['Out'])
-    truevalues['Impact/Inns'] = (truevalues['Impact'] / truevalues['I'])
+    # truevalues['Impact/Inns'] = (truevalues['Impact'] / truevalues['I'])
     return truevalues
 
 def calculate_entry_point_all_years(data):
