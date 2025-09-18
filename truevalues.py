@@ -452,10 +452,15 @@ def load_data(filename):
 def main():
     st.sidebar.title('True Values')
 
+    format_choice = st.sidebar.selectbox('Select Format:', ['T20s', 'ODI'])
+    if format_choice == 'T20s':
+        # Load data with caching
+        allt20s = load_data('T20DataT20Leagues_optimized.parquet')  # Changed to parquet
+    else:
+        allt20s = load_data('ODIData_optimized.parquet')  # Changed to parquet
 
-    # Load data with caching
-    allt20s = load_data('T20DataT20Leagues_optimized.parquet')  # Changed to parquet
     selected_leagues = st.sidebar.multiselect('Choose leagues:', allt20s['CompName'].unique())
+
 
     if selected_leagues:
         data = allt20s[allt20s['CompName'].isin(selected_leagues)]
@@ -510,7 +515,8 @@ def main():
         if choice4:
             filtered_data2 = filtered_data2[filtered_data2['TeamInns'].isin(choice4)]
 
-        start_over, end_over = st.sidebar.slider('Select Overs Range:', min_value=1, max_value=20, value=(1, 20))
+        max_over = max((filtered_data2['over']).astype(int))
+        start_over, end_over = st.sidebar.slider('Select Overs Range:', min_value=1, max_value=max_over, value=(1, max_over))
         filtered_data2 = filtered_data2[(filtered_data2['over'] >= start_over) & (filtered_data2['over'] <= end_over)]
 
 
