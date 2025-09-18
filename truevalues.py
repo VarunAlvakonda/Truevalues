@@ -43,7 +43,7 @@ def calculate_entry_point_all_years(data):
     deliveries = avg_entry_point_deliveries['total_deliveries'].values
     avg_entry_point_deliveries['average_over'] = np.round((deliveries // 6) + (deliveries % 6) / 10, 1)
 
-    return avg_entry_point_deliveries[['Batter', 'average_over']], first_appearance
+    return avg_entry_point_deliveries[['Batsman','Batter', 'average_over']], first_appearance
 
 def calculate_first_appearance(data):
     # Optimized version
@@ -54,13 +54,13 @@ def calculate_first_appearance(data):
     first_appearance['total_deliveries'] = (over_vals.astype(int) * 6 +
                                             ((over_vals - over_vals.astype(int)) * 10).astype(int))
 
-    avg_entry_point_deliveries = first_appearance.groupby(['Batter', 'year'])['total_deliveries'].median().reset_index()
+    avg_entry_point_deliveries = first_appearance.groupby(['Batsman','Batter', 'year'])['total_deliveries'].median().reset_index()
 
     # Vectorized conversion back
     deliveries = avg_entry_point_deliveries['total_deliveries'].values
     avg_entry_point_deliveries['average_over'] = np.round((deliveries // 6) + (deliveries % 6) / 10, 1)
 
-    return avg_entry_point_deliveries[['Batter', 'average_over']]
+    return avg_entry_point_deliveries[['Batsman','Batter', 'average_over']]
 
 def analyze_data_for_year2(data):
     year_data = data.copy()
@@ -79,7 +79,7 @@ def analyze_data_for_year3(year2, data2):
     combineddata = data2[(data2['TeamInns'] < 3) & (data2['year'] == year2)]
 
     # Optimized innings calculation
-    inns = combineddata.groupby(['Batter', 'MatchNum'])[['Runs']].sum().reset_index()
+    inns = combineddata.groupby(['Batsman','Batter', 'MatchNum'])[['Runs']].sum().reset_index()
     inns['I'] = 1
     inns2 = inns.groupby(['Batter'])[['I']].sum().reset_index()
     inns2.columns = ['Player', 'I']
@@ -96,7 +96,7 @@ def analyze_data_for_year3(year2, data2):
     dismissed_data['Out'] = 1
 
     # More efficient merge
-    merge_cols = ['MatchNum','TeamInns', 'Batter', 'Notes','over']
+    merge_cols = ['MatchNum','TeamInns', 'Batsman','Batter', 'Notes','over']
     combineddata = pd.merge(
         combineddata,
         dismissed_data[merge_cols + ['Out']],
@@ -105,23 +105,23 @@ def analyze_data_for_year3(year2, data2):
     ).fillna({'Out': 0})
 
     # Vectorized groupby operations
-    groupby_cols_player = ['Batter', 'TeamInns', place, 'over']
+    groupby_cols_player = ['Batsman','Batter', 'TeamInns', place, 'over']
     groupby_cols_over = ['TeamInns', place,'over']
 
     player_outs = dismissed_data.groupby(groupby_cols_player)[['Out']].sum().reset_index()
-    player_outs.columns = ['Player', 'TeamInns', place, 'Over', 'Out']
+    player_outs.columns = ['Batsman','Player', 'TeamInns', place, 'Over', 'Out']
 
     over_outs = dismissed_data.groupby(groupby_cols_over)[['Out']].sum().reset_index()
     over_outs.columns = ['TeamInns', place, 'Over', 'Outs']
 
     player_runs = combineddata.groupby(groupby_cols_player)[['Runs', 'B','Impact']].sum().reset_index()
-    player_runs.columns = ['Player', 'TeamInns', place, 'Over', 'Runs Scored', 'BF','Impact']
+    player_runs.columns = ['Batsman','Player', 'TeamInns', place, 'Over', 'Runs Scored', 'BF','Impact']
 
     over_runs = combineddata.groupby(groupby_cols_over)[['Runs', 'B']].sum().reset_index()
     over_runs.columns = ['TeamInns', place, 'Over', 'Runs', 'B']
 
     # Sequential merges (more memory efficient)
-    combined_df = pd.merge(player_runs, player_outs, on=['Player', 'TeamInns', place, 'Over'], how='left')
+    combined_df = pd.merge(player_runs, player_outs, on=['Batsman','Player', 'TeamInns', place, 'Over'], how='left')
     combined_df2 = pd.merge(over_runs, over_outs, on=['TeamInns', place, 'Over'], how='left')
     combined_df3 = pd.merge(combined_df, combined_df2, on=['TeamInns', place, 'Over'], how='left')
 
@@ -153,17 +153,17 @@ def analyze_data_for_year3(year2, data2):
 
     # Optimized aggregation
     agg_cols = ['Runs Scored', 'BF', 'Out','Expected Runs', 'Expected Outs','Impact']
-    truevalues = combined_df3.groupby(['Player'], observed=True)[agg_cols].sum().reset_index()
+    truevalues = combined_df3.groupby(['Player','Batsman'], observed=True)[agg_cols].sum().reset_index()
 
     final_results = truemetrics(truevalues)
 
     # Efficient final merges
-    players_years = combineddata[['Batter','year']].drop_duplicates()
-    players_years.columns = ['Player','Year']
+    players_years = combineddata[['Batsman','Batter','year']].drop_duplicates()
+    players_years.columns = ['Batsman','Player','Year']
 
-    final_results2 = pd.merge(inns2, final_results, on='Player', how='left')
-    final_results3 = pd.merge(players_years, final_results2, on='Player', how='left')
-    # final_results4 = pd.merge(final_results3, analysis_results, on='Player', how='left')
+    final_results2 = pd.merge(inns2, final_results, on=['Batsman','Player'], how='left')
+    final_results3 = pd.merge(players_years, final_results2, on=['Batsman','Player'], how='left')
+    # final_results4 = pd.merge(final_results3, analysis_results, on='Batsman','Player', how='left')
 
     return final_results3.round(2)
 
@@ -536,7 +536,7 @@ def main():
         if choice0 == 'Batting':
             # Optimized final aggregation
             agg_cols = ['I', 'Runs Scored', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
-            truevalues = combined_data.groupby(['Player'])[agg_cols].sum().reset_index()
+            truevalues = combined_data.groupby(['Player','Batsman'])[agg_cols].sum().reset_index()
             final_results = truemetrics(truevalues)
             final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
         else:
