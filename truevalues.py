@@ -452,14 +452,14 @@ def load_data(filename):
 def main():
     st.sidebar.title('True Values')
 
-    # format_choice = st.sidebar.selectbox('Select Format:', ['T20s', 'ODI'])
-    # if format_choice == 'T20s':
-    #     # Load data with caching
-    #     allt20s = load_data('T20DataT20Leagues_optimized.parquet')  # Changed to parquet
-    # else:
-    #     allt20s = load_data('ODIData_optimized.parquet')  # Changed to parquet
+    format_choice = st.sidebar.selectbox('Select Format:', ['T20s', 'ODI'])
+    if format_choice == 'T20s':
+        # Load data with caching
+        data = load_data('T20DataT20Leagues_optimized.parquet')  # Changed to parquet
+    else:
+        data = load_data('ODIData_optimized.parquet')  # Changed to parquet
 
-    data = load_data('T20DataT20Leagues_optimized.parquet')
+    # data = load_data('T20DataT20Leagues_optimized.parquet')
     selected_leagues = st.sidebar.multiselect('Choose leagues:', data['CompName'].unique())
 
 
