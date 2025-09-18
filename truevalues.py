@@ -81,8 +81,8 @@ def analyze_data_for_year3(year2, data2):
     # Optimized innings calculation
     inns = combineddata.groupby(['Batsman','Batter', 'MatchNum'])[['Runs']].sum().reset_index()
     inns['I'] = 1
-    inns2 = inns.groupby(['Batter'])[['I']].sum().reset_index()
-    inns2.columns = ['Player', 'I']
+    inns2 = inns.groupby(['Batsman','Batter'])[['I']].sum().reset_index()
+    inns2.columns = ['Batsman','Player', 'I']
     inns['CI'] = inns.groupby(['Batter'])[['I']].cumsum()
 
     # Vectorized entry point analysis
