@@ -73,7 +73,6 @@ def analyze_data_for_year2(data):
 
     return analysis_results
 
-@st.cache_data
 def analyze_data_for_year3(year2, data2):
     # Early filtering
     combineddata = data2[(data2['TeamInns'] < 3) & (data2['year'] == year2)]
@@ -460,7 +459,7 @@ def main():
         data = load_data('ODIData_optimized.parquet')  # Changed to parquet
 
     # data = load_data('T20DataT20Leagues_optimized.parquet')
-    selected_leagues = st.sidebar.multiselect('Choose leagues:', data['CompName'].unique())
+    selected_leagues = st.sidebar.multiselect('Choose Competitions:', data['CompName'].unique())
 
 
     if selected_leagues:
