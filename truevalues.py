@@ -582,8 +582,7 @@ def main():
             start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
 
             final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
-            if format_choice == 'WODI':
-                final_results = final_results.drop(columns=['Impact'])
+            final_results['Impact/Inns'] = final_results['Impact']/final_results['I']
             st.dataframe(final_results.round(2))
         else:
             final_results = final_results.sort_values(by=['Out'], ascending=False)
@@ -599,8 +598,8 @@ def main():
             start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
 
             final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
-            if format_choice == 'WODI':
-                final_results = final_results.drop(columns=['Impact'])
+            final_results['Impact/Inns'] = final_results['Impact']/final_results['I']
+
             st.dataframe(final_results.round(2))
 
     elif choice == 'Season By Season':
@@ -630,8 +629,7 @@ def main():
             start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
 
             combined_data = combined_data[(combined_data['BF'] >= start_balls) & (combined_data['BF'] <= end_balls)]
-            if format_choice == 'WODI':
-                combined_data = combined_data.drop(columns=['Impact'])
+            combined_data['Impact/Inns'] = combined_data['Impact']/combined_data['I']
             st.dataframe(combined_data.round(2))
         else:
             combined_data = combined_data.sort_values(by=['Out'], ascending=False)
@@ -647,8 +645,7 @@ def main():
             start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
 
             combined_data = combined_data[(combined_data['BF'] >= start_balls) & (combined_data['BF'] <= end_balls)]
-            if format_choice == 'WODI':
-                combined_data = combined_data.drop(columns=['Impact'])
+            combined_data['Impact/Inns'] = combined_data['Impact']/combined_data['I']
             st.dataframe(combined_data.round(2))
 
 # Run the main function
