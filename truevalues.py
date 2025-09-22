@@ -532,121 +532,150 @@ def main():
 
     # Process years with better progress indication
     unique_years = sorted(filtered_data2['year'].unique())
-    if st.sidebar.button('Show Results'):
+    # Process years with better progress indication
+    unique_years = sorted(filtered_data2['year'].unique())
 
-        for i, year in enumerate(unique_years):
-            if choice0 == 'Batting':
-                results = analyze_data_for_year3(year, filtered_data2)
-            else:
-                results = analyze_data_for_year6(year, filtered_data2)
-            all_data.append(results)
+    # Use form to keep sliders persistent
+    with st.sidebar.form("results_form"):
+        show_results = st.form_submit_button('Show Results')
 
-        combined_data = pd.concat(all_data, ignore_index=True)
+        # Initialize variables to store processed data
+        if show_results:
+            all_data = []
 
-        if choice0 == 'Batting':
-            # Optimized final aggregation
-            agg_cols = ['I', 'Runs Scored', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
-            truevalues = combined_data.groupby(['Player','Batsman'])[agg_cols].sum().reset_index()
-            final_results = truemetrics(truevalues)
-            final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
-        else:
-            agg_cols = ['I', 'RC', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
-            truevalues = combined_data.groupby(['Player','Type'], observed=True)[agg_cols].sum().reset_index()
-            final_results = truemetricsbowling(truevalues)
-            final_results = final_results.sort_values(by=['Out'], ascending=False)
+            for i, year in enumerate(unique_years):
+                if choice0 == 'Batting':
+                    results = analyze_data_for_year3(year, filtered_data2)
+                else:
+                    results = analyze_data_for_year6(year, filtered_data2)
+                all_data.append(results)
 
-        if choice == 'Overall Stats':
-            if choice2 == 'Individual':
-                # Efficient player filtering
-                valid_players = set(final_results['Player'].unique())
-                temp = [p for p in player if p in valid_players]
-
-                # Show invalid players
-                invalid_players = [p for p in player if p not in valid_players]
-                for invalid_player in invalid_players:
-                    st.sidebar.subheader(f'{invalid_player} not in this list')
-
-                if temp:
-                    final_results = final_results[final_results['Player'].isin(temp)]
+            combined_data = pd.concat(all_data, ignore_index=True)
 
             if choice0 == 'Batting':
+                # Optimized final aggregation
+                agg_cols = ['I', 'Runs Scored', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
+                truevalues = combined_data.groupby(['Player','Batsman'])[agg_cols].sum().reset_index()
+                final_results = truemetrics(truevalues)
                 final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
-                drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
-                final_results = final_results.drop(columns=drop_cols)
-                # Clean up columns for output
-                run = max((final_results['Runs Scored']).astype(int))
-
-                start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
-                final_results = final_results[(final_results['Runs Scored'] >= start_runs) & (final_results['Runs Scored'] <= end_runs)]
-                balls = max((final_results['BF']).astype(int))
-                start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
-
-                final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
-                final_results['Impact/Inns'] = final_results['Impact']/final_results['I']
-                st.dataframe(final_results.round(2))
             else:
+                agg_cols = ['I', 'RC', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
+                truevalues = combined_data.groupby(['Player','Type'], observed=True)[agg_cols].sum().reset_index()
+                final_results = truemetricsbowling(truevalues)
                 final_results = final_results.sort_values(by=['Out'], ascending=False)
-                final_results = final_results.drop(columns=['Expected Runs','Expected Outs','Expected Econ','Expected SR',])
 
-                # Clean up columns for output
-                outs = max((final_results['Out']).astype(int))
+            if choice == 'Overall Stats':
+                if choice2 == 'Individual':
+                    # Efficient player filtering
+                    valid_players = set(final_results['Player'].unique())
+                    temp = [p for p in player if p in valid_players]
 
-                start_runs, end_runs = st.sidebar.slider('Select Wickets:', min_value=0, max_value=outs, value=(1, outs))
-                final_results = final_results[(final_results['Out'] >= start_runs) & (final_results['Out'] <= end_runs)]
+                    # Show invalid players
+                    invalid_players = [p for p in player if p not in valid_players]
+                    for invalid_player in invalid_players:
+                        st.sidebar.write(f'{invalid_player} not in this list')
 
-                balls = max((final_results['BF']).astype(int))
-                start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
+                    if temp:
+                        final_results = final_results[final_results['Player'].isin(temp)]
 
-                final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
-                final_results['Impact/Inns'] = final_results['Impact']/final_results['I']
+                if choice0 == 'Batting':
+                    final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
+                    drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
+                    final_results = final_results.drop(columns=drop_cols)
 
-                st.dataframe(final_results.round(2))
+                    # Get max values for sliders
+                    run = max((final_results['Runs Scored']).astype(int))
+                    balls = max((final_results['BF']).astype(int))
 
+                    # Sliders inside form - will persist
+                    start_runs, end_runs = st.slider('Select Minimum Runs Scored:',
+                                                     min_value=0, max_value=run, value=(1, run))
+                    start_balls, end_balls = st.slider('Select Minimum BF:',
+                                                       min_value=1, max_value=balls, value=(1, balls))
+
+                    # Apply filters
+                    final_results = final_results[(final_results['Runs Scored'] >= start_runs) & (final_results['Runs Scored'] <= end_runs)]
+                    final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
+                    final_results['Impact/Inns'] = final_results['Impact']/final_results['I']
+
+                else:
+                    final_results = final_results.sort_values(by=['Out'], ascending=False)
+                    final_results = final_results.drop(columns=['Expected Runs','Expected Outs','Expected Econ','Expected SR'])
+
+                    # Get max values for sliders
+                    outs = max((final_results['Out']).astype(int))
+                    balls = max((final_results['BF']).astype(int))
+
+                    # Sliders inside form - will persist
+                    start_runs, end_runs = st.slider('Select Wickets:',
+                                                     min_value=0, max_value=outs, value=(1, outs))
+                    start_balls, end_balls = st.slider('Select Minimum BF:',
+                                                       min_value=1, max_value=balls, value=(1, balls))
+
+                    # Apply filters
+                    final_results = final_results[(final_results['Out'] >= start_runs) & (final_results['Out'] <= end_runs)]
+                    final_results = final_results[(final_results['BF'] >= start_balls) & (final_results['BF'] <= end_balls)]
+                    final_results['Impact/Inns'] = final_results['Impact']/final_results['I']
+
+            elif choice == 'Season By Season':
+                if choice2 == 'Individual':
+                    # Efficient player filtering
+                    valid_players = set(combined_data['Player'].unique())
+                    temp = [p for p in player if p in valid_players]
+
+                    # Show invalid players
+                    invalid_players = [p for p in player if p not in valid_players]
+                    for invalid_player in invalid_players:
+                        st.sidebar.write(f'{invalid_player} not in this list')
+
+                    if temp:
+                        combined_data = combined_data[combined_data['Player'].isin(temp)]
+
+                if choice0 == 'Batting':
+                    combined_data = combined_data.sort_values(by=['Runs Scored'], ascending=False)
+                    drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
+                    combined_data = combined_data.drop(columns=drop_cols)
+
+                    # Get max values for sliders
+                    run = max((combined_data['Runs Scored']).astype(int))
+                    balls = max((combined_data['BF']).astype(int))
+
+                    # Sliders inside form - will persist
+                    start_runs, end_runs = st.slider('Select Minimum Runs Scored:',
+                                                     min_value=0, max_value=run, value=(1, run))
+                    start_balls, end_balls = st.slider('Select Minimum BF:',
+                                                       min_value=1, max_value=balls, value=(1, balls))
+
+                    # Apply filters
+                    combined_data = combined_data[(combined_data['Runs Scored'] >= start_runs) & (combined_data['Runs Scored'] <= end_runs)]
+                    combined_data = combined_data[(combined_data['BF'] >= start_balls) & (combined_data['BF'] <= end_balls)]
+                    combined_data['Impact/Inns'] = combined_data['Impact']/combined_data['I']
+
+                else:
+                    combined_data = combined_data.sort_values(by=['Out'], ascending=False)
+                    combined_data = combined_data.drop(columns=['Expected Runs','Expected Outs','Expected Econ'])
+
+                    # Get max values for sliders
+                    outs = max((combined_data['Out']).astype(int))
+                    balls = max((combined_data['BF']).astype(int))
+
+                    # Sliders inside form - will persist
+                    start_runs, end_runs = st.slider('Select Wickets:',
+                                                     min_value=0, max_value=outs, value=(1, outs))
+                    start_balls, end_balls = st.slider('Select Minimum BF:',
+                                                       min_value=1, max_value=balls, value=(1, balls))
+
+                    # Apply filters
+                    combined_data = combined_data[(combined_data['Out'] >= start_runs) & (combined_data['Out'] <= end_runs)]
+                    combined_data = combined_data[(combined_data['BF'] >= start_balls) & (combined_data['BF'] <= end_balls)]
+                    combined_data['Impact/Inns'] = combined_data['Impact']/combined_data['I']
+
+    # Display results outside the form
+    if show_results:
+        if choice == 'Overall Stats':
+            st.dataframe(final_results.round(2))
         elif choice == 'Season By Season':
-            if choice2 == 'Individual':
-                # Efficient player filtering
-                valid_players = set(combined_data['Player'].unique())
-                temp = [p for p in player if p in valid_players]
-
-                # Show invalid players
-                invalid_players = [p for p in player if p not in valid_players]
-                for invalid_player in invalid_players:
-                    st.sidebar.subheader(f'{invalid_player} not in this list')
-
-                if temp:
-                    combined_data = combined_data[combined_data['Player'].isin(temp)]
-
-            if choice0 == 'Batting':
-                combined_data = combined_data.sort_values(by=['Runs Scored'], ascending=False)
-                drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
-                combined_data = combined_data.drop(columns=drop_cols)
-                # Clean up columns for output
-                run = max((combined_data['Runs Scored']).astype(int))
-
-                start_runs, end_runs = st.sidebar.slider('Select Minimum Runs Scored:', min_value=0, max_value=run, value=(1, run))
-                combined_data = combined_data[(combined_data['Runs Scored'] >= start_runs) & (combined_data['Runs Scored'] <= end_runs)]
-                balls = max((combined_data['BF']).astype(int))
-                start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
-
-                combined_data = combined_data[(combined_data['BF'] >= start_balls) & (combined_data['BF'] <= end_balls)]
-                combined_data['Impact/Inns'] = combined_data['Impact']/combined_data['I']
-                st.dataframe(combined_data.round(2))
-            else:
-                combined_data = combined_data.sort_values(by=['Out'], ascending=False)
-                combined_data = combined_data.drop(columns=['Expected Runs','Expected Outs','Expected Econ'])
-
-                # Clean up columns for output
-                outs = max((combined_data['Out']).astype(int))
-
-                start_runs, end_runs = st.sidebar.slider('Select Wickets:', min_value=0, max_value=outs, value=(1, outs))
-                combined_data = combined_data[(combined_data['Out'] >= start_runs) & (combined_data['Out'] <= end_runs)]
-
-                balls = max((combined_data['BF']).astype(int))
-                start_balls, end_balls = st.sidebar.slider('Select Minimum BF:', min_value=1, max_value=balls, value=(1, balls))
-
-                combined_data = combined_data[(combined_data['BF'] >= start_balls) & (combined_data['BF'] <= end_balls)]
-                combined_data['Impact/Inns'] = combined_data['Impact']/combined_data['I']
-                st.dataframe(combined_data.round(2))
+            st.dataframe(combined_data.round(2))
 
 # Run the main function
 if __name__ == '__main__':
