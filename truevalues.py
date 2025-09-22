@@ -554,7 +554,7 @@ def main():
         final_results = truemetricsbowling(truevalues)
         final_results = final_results.sort_values(by=['Out'], ascending=False)
 
-    if st.button('Show Results'):
+    if st.sidebar.button('Show Results'):
         if choice == 'Overall Stats':
             if choice2 == 'Individual':
                 # Efficient player filtering
