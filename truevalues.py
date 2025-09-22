@@ -532,29 +532,29 @@ def main():
 
     # Process years with better progress indication
     unique_years = sorted(filtered_data2['year'].unique())
-
-    for i, year in enumerate(unique_years):
-        if choice0 == 'Batting':
-            results = analyze_data_for_year3(year, filtered_data2)
-        else:
-            results = analyze_data_for_year6(year, filtered_data2)
-        all_data.append(results)
-
-    combined_data = pd.concat(all_data, ignore_index=True)
-
-    if choice0 == 'Batting':
-        # Optimized final aggregation
-        agg_cols = ['I', 'Runs Scored', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
-        truevalues = combined_data.groupby(['Player','Batsman'])[agg_cols].sum().reset_index()
-        final_results = truemetrics(truevalues)
-        final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
-    else:
-        agg_cols = ['I', 'RC', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
-        truevalues = combined_data.groupby(['Player','Type'], observed=True)[agg_cols].sum().reset_index()
-        final_results = truemetricsbowling(truevalues)
-        final_results = final_results.sort_values(by=['Out'], ascending=False)
-
     if st.sidebar.button('Show Results'):
+
+        for i, year in enumerate(unique_years):
+            if choice0 == 'Batting':
+                results = analyze_data_for_year3(year, filtered_data2)
+            else:
+                results = analyze_data_for_year6(year, filtered_data2)
+            all_data.append(results)
+
+        combined_data = pd.concat(all_data, ignore_index=True)
+
+        if choice0 == 'Batting':
+            # Optimized final aggregation
+            agg_cols = ['I', 'Runs Scored', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
+            truevalues = combined_data.groupby(['Player','Batsman'])[agg_cols].sum().reset_index()
+            final_results = truemetrics(truevalues)
+            final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
+        else:
+            agg_cols = ['I', 'RC', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
+            truevalues = combined_data.groupby(['Player','Type'], observed=True)[agg_cols].sum().reset_index()
+            final_results = truemetricsbowling(truevalues)
+            final_results = final_results.sort_values(by=['Out'], ascending=False)
+
         if choice == 'Overall Stats':
             if choice2 == 'Individual':
                 # Efficient player filtering
