@@ -632,7 +632,7 @@ def main():
                         combined_data = combined_data[combined_data['Player'].isin(temp)]
 
                 if choice0 == 'Batting':
-                    combined_data = combined_data.sort_values(by=['Runs Scored'], ascending=False)
+                    combined_data = combined_data.sort_values(by=['Year'], ascending=False)
                     drop_cols = ['Expected Runs', 'Expected Outs','Out Ratio','Expected Ave','Expected SR']
                     combined_data = combined_data.drop(columns=drop_cols)
 
@@ -652,7 +652,7 @@ def main():
                     combined_data['Impact/Inns'] = combined_data['Impact']/combined_data['I']
 
                 else:
-                    combined_data = combined_data.sort_values(by=['Out'], ascending=False)
+                    combined_data = combined_data.sort_values(by=['Year'], ascending=False)
                     combined_data = combined_data.drop(columns=['Expected Runs','Expected Outs','Expected Econ'])
 
                     # Get max values for sliders
