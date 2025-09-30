@@ -227,19 +227,19 @@ def analyze_data_for_year6(year2, data2):
 
     # Vectorized groupby operations
     player_outs = dismissed_data.groupby(['Bowlers','Bowler', place,'over'], observed=True)[['Out']].sum().reset_index()
-    player_outs.columns = ['Player', place,'Over', 'Out']
+    player_outs.columns = ['Player','BowlNum', place,'Over', 'Out']
 
     over_outs = dismissed_data.groupby([place,'over'], observed=True)[['Out']].sum().reset_index()
     over_outs.columns = [place,'Over', 'Outs']
 
     player_runs = combineddata.groupby(['Bowlers','Bowler', place,'over'], observed=True)[['RC', 'B','Impact']].sum().reset_index()
-    player_runs.columns = ['Player', place, 'Over', 'RC', 'BF','Impact']
+    player_runs.columns = ['Player','BowlNum',place, 'Over', 'RC', 'BF','Impact']
 
     over_runs = combineddata.groupby([place,'over'], observed=True)[['RC', 'B']].sum().reset_index()
     over_runs.columns = [place,'Over', 'Runs', 'B']
 
     # Sequential merges
-    combined_df = pd.merge(player_runs, player_outs, on=['Player', place,'Over'], how='left')
+    combined_df = pd.merge(player_runs, player_outs, on=['Player','BowlNum', place,'Over'], how='left')
     combined_df2 = pd.merge(over_runs, over_outs, on=[place,'Over'], how='left')
     combined_df3 = pd.merge(combined_df, combined_df2, on=[place,'Over'], how='left')
 
@@ -271,7 +271,7 @@ def analyze_data_for_year6(year2, data2):
 
     # Optimized aggregation
     agg_cols = ['RC', 'BF', 'Out','Expected Runs', 'Expected Outs','Impact']
-    truevalues = combined_df3.groupby(['Player'], observed=True)[agg_cols].sum().reset_index()
+    truevalues = combined_df3.groupby(['Player','BowlNum',], observed=True)[agg_cols].sum().reset_index()
 
     final_results = truemetricsbowling(truevalues)
 
