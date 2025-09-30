@@ -196,10 +196,10 @@ def analyze_data_for_year6(year2, data2):
     combineddata = data2[(data2['TeamInns'] < 3) & (data2['year'] == year2)]
 
     # Optimized innings calculation
-    inns = combineddata.groupby(['Bowlers','MatchNum'], observed=True)[['Runs']].sum().reset_index()
+    inns = combineddata.groupby(['Bowlers','Bowler','MatchNum'], observed=True)[['Runs']].sum().reset_index()
     inns['I'] = 1
-    inns2 = inns.groupby(['Bowlers'], observed=True)[['I']].sum().reset_index()
-    inns2.columns = ['Player','I']
+    inns2 = inns.groupby(['Bowlers','Bowler'], observed=True)[['I']].sum().reset_index()
+    inns2.columns = ['Player','BowlNum','I']
     inns['CI'] = inns.groupby(['Bowlers'], observed=True)[['I']].cumsum()
 
     # Vectorized entry point analysis
@@ -215,7 +215,7 @@ def analyze_data_for_year6(year2, data2):
     dismissed_data['Out'] = 1
 
     # More efficient merge
-    merge_cols = ['MatchNum','TeamInns',place,'Bowlers', 'Notes','over']
+    merge_cols = ['MatchNum','TeamInns',place,'Bowlers','Bowler', 'Notes','over']
     combineddata = pd.merge(
         combineddata,
         dismissed_data[merge_cols + ['Out']],
@@ -226,13 +226,13 @@ def analyze_data_for_year6(year2, data2):
     combineddata = combineddata.drop_duplicates()
 
     # Vectorized groupby operations
-    player_outs = dismissed_data.groupby(['Bowlers', place,'over'], observed=True)[['Out']].sum().reset_index()
+    player_outs = dismissed_data.groupby(['Bowlers','Bowler', place,'over'], observed=True)[['Out']].sum().reset_index()
     player_outs.columns = ['Player', place,'Over', 'Out']
 
     over_outs = dismissed_data.groupby([place,'over'], observed=True)[['Out']].sum().reset_index()
     over_outs.columns = [place,'Over', 'Outs']
 
-    player_runs = combineddata.groupby(['Bowlers', place,'over'], observed=True)[['RC', 'B','Impact']].sum().reset_index()
+    player_runs = combineddata.groupby(['Bowlers','Bowler', place,'over'], observed=True)[['RC', 'B','Impact']].sum().reset_index()
     player_runs.columns = ['Player', place, 'Over', 'RC', 'BF','Impact']
 
     over_runs = combineddata.groupby([place,'over'], observed=True)[['RC', 'B']].sum().reset_index()
@@ -276,11 +276,11 @@ def analyze_data_for_year6(year2, data2):
     final_results = truemetricsbowling(truevalues)
 
     # Efficient final merges
-    players_years = combineddata[['Bowlers', 'BowlCat','year']].drop_duplicates()
-    players_years.columns = ['Player','Type','Year']
+    players_years = combineddata[['Bowlers','Bowler', 'BowlCat','year']].drop_duplicates()
+    players_years.columns = ['Player','BowlNum','Type','Year']
 
-    final_results2 = pd.merge(inns2, final_results, on=['Player'], how='left')
-    final_results3 = pd.merge(players_years, final_results2, on=['Player'], how='left')
+    final_results2 = pd.merge(inns2, final_results, on=['Player','BowlNum',], how='left')
+    final_results3 = pd.merge(players_years, final_results2, on=['Player','BowlNum',], how='left')
     # final_results4 = pd.merge(final_results3, analysis_results, on='Player', how='left')
     # final_results3['Year'] = year2
 
@@ -311,140 +311,7 @@ def apply_dl_vectorized(df, balls_col, wickets_param, alpha_p, beta_p):
 # Load the data with optimizations
 @st.cache_data
 def load_data(filename):
-    print("Loading data from parquet...")
     data = pd.read_parquet(filename)
-    print(data.columns)
-    # # Vectorized operations
-    # data['B'] = np.where(data['Notes'] == 'W', 0, 1)
-    # data['RC'] = data['Runs'] + data['Extras']
-    # data['TotalRuns'] = data['Runs'] + data['Extras']
-    #
-    # # Vectorized date operations
-    # data['Date'] = pd.to_datetime(data['StartDate'], format='mixed')
-    # data['year'] = data['Date'].dt.year
-    #
-    # # Remove duplicates early
-    # data = data.drop_duplicates()
-    #
-    # # Vectorized over calculations
-    # data['ball2'] = pd.to_numeric(data['Over'], errors='coerce')
-    # data['over'] = data['ball2'] // 1 + 1
-    #
-    # # Bowling type classification using dictionary mapping (faster than multiple isin calls)
-    # bowling_map = {
-    #     'RF': 'Right Arm Pace', 'RFM': 'Right Arm Pace', 'RM': 'Right Arm Pace', 'RMF': 'Right Arm Pace',
-    #     'LF': 'Left Arm Pace', 'LF/LM': 'Left Arm Pace', 'LFM': 'Left Arm Pace', 'LM': 'Left Arm Pace', 'LMF': 'Left Arm Pace',
-    #     'OB': 'Right Arm Finger Spin', 'RM/OB': 'Right Arm Finger Spin', 'S': 'Right Arm Finger Spin',
-    #     'SLA': 'Left Arm Finger Spin',
-    #     'LB': 'Right Arm Wrist Spin',
-    #     'SLW': 'Left Arm Wrist Spin'
-    # }
-    # data['Types'] = data['BowlType'].map(bowling_map).fillna('L')
-    #
-    # # Simplified BowlCat mapping
-    # data['BowlCat'] = data['BowlCat'].replace({'F': 'Pace', 'S': 'Spin'})
-
-    # # Target runs calculation (optimized)
-    # print("Calculating target runs...")
-    # runsbymatch = data.groupby(['MatchNum','TeamInns'])[['TotalRuns']].sum().reset_index()
-    # runsbymatch = runsbymatch[runsbymatch['TeamInns']==1]
-    # runsbymatch = runsbymatch.rename(columns={'TotalRuns':'TargetRuns'})
-    # runsbymatch = runsbymatch.drop(columns=['TeamInns'])
-    #
-    # combined_data2 = data[data['TeamInns']==2]
-    # combined_data2 = pd.merge(combined_data2, runsbymatch, how='left', on=['MatchNum'])
-    # data = pd.concat([data[data['TeamInns']==1], combined_data2], ignore_index=True)
-    #
-    # # Load DL parameter files
-    # print("Loading DL parameters...")
-    # dl_params_df = pd.read_csv('dl_model_parameters.csv', low_memory=False)
-    # dl_params_df2 = pd.read_csv('dl_model_parameters_ipl_2008_2013.csv', low_memory=False)
-    # dl_params_df3 = pd.read_csv('dl_model_parameters_ipl_2014_2017.csv', low_memory=False)
-    # dl_params_df4 = pd.read_csv('dl_model_parameters_ipl_2018_2021.csv', low_memory=False)
-    #
-    # def params(dl_params_df):
-    #     alpha_params, _ = curve_fit(cubic_poly, dl_params_df["Wickets"], dl_params_df["Alpha"])
-    #     beta_params, _ = curve_fit(cubic_poly, dl_params_df["Wickets"], dl_params_df["Beta"])
-    #     return alpha_params, beta_params
-    #
-    # def dl_model(u, w, alpha_params, beta_params):
-    #     alpha = cubic_poly(w, *alpha_params)
-    #     beta = cubic_poly(w, *beta_params)
-    #     return alpha * (1 - np.exp(-u / beta))
-    #
-    # # Cumulative calculations (optimized groupby operations)
-    # print("Computing cumulative statistics...")
-    # data['TeamRuns'] = data.groupby(['MatchNum', 'TeamInns'])['TotalRuns'].cumsum()
-    #
-    # # Wickets calculation
-    # data['Wkts'] = data['HowOut'].notnull().astype(int)
-    # data['TeamWicket'] = data.groupby(['MatchNum', 'TeamInns'])['Wkts'].cumsum()
-    #
-    # # Other cumulative stats
-    # data['TeamBalls'] = data.groupby(['MatchNum', 'TeamInns'])['B'].cumsum()
-    # data['MatchBatRuns'] = data.groupby(['Batter','MatchNum', 'TeamInns'])['Runs'].cumsum()
-    # data['BatterBalls'] = data.groupby(['Batter','MatchNum', 'TeamInns'])['B'].cumsum()
-    # data['MatchBowlRC'] = data.groupby(['Bowlers','MatchNum', 'TeamInns'])['RC'].cumsum()
-    # data['MatchBowlBalls'] = data.groupby(['Bowlers','MatchNum', 'TeamInns'])['B'].cumsum()
-    # data['MatchBowlWkt'] = data.groupby(['Bowlers','MatchNum', 'TeamInns'])['Wkts'].cumsum()
-    #
-    # data['BallsRemaining'] = 120 - data['TeamBalls']
-    #
-    # # Apply DL models for different time periods (vectorized)
-    # print("Applying DL models...")
-    #
-    # # Initialize columns
-    # data["PredictedRemainingRuns_Smoothed"] = 0.0
-    # data["ParInitial"] = 0.0
-    #
-    # # Default parameters
-    # alpha_params, beta_params = params(dl_params_df)
-    # mask_default = ~data['year'].isin(range(2008, 2022))
-    # if mask_default.any():
-    #     data.loc[mask_default, "PredictedRemainingRuns_Smoothed"] = apply_dl_vectorized(
-    #         data.loc[mask_default], 'BallsRemaining', 'TeamWicket', alpha_params, beta_params)
-    #     data.loc[mask_default, "ParInitial"] = apply_dl_vectorized(
-    #         data.loc[mask_default], 'TeamBalls', 0, alpha_params, beta_params) * 0 + dl_model(120, 0, alpha_params, beta_params)
-    #
-    # # 2008-2013 parameters
-    # alpha_params2, beta_params2 = params(dl_params_df2)
-    # mask_2008_2013 = data['year'].isin(range(2008, 2014))
-    # if mask_2008_2013.any():
-    #     data.loc[mask_2008_2013, "PredictedRemainingRuns_Smoothed"] = apply_dl_vectorized(
-    #         data.loc[mask_2008_2013], 'BallsRemaining', 'TeamWicket', alpha_params2, beta_params2)
-    #     data.loc[mask_2008_2013, "ParInitial"] = dl_model(120, 0, alpha_params2, beta_params2)
-    #
-    # # 2014-2017 parameters
-    # alpha_params3, beta_params3 = params(dl_params_df3)
-    # mask_2014_2017 = data['year'].isin(range(2014, 2018))
-    # if mask_2014_2017.any():
-    #     data.loc[mask_2014_2017, "PredictedRemainingRuns_Smoothed"] = apply_dl_vectorized(
-    #         data.loc[mask_2014_2017], 'BallsRemaining', 'TeamWicket', alpha_params3, beta_params3)
-    #     data.loc[mask_2014_2017, "ParInitial"] = dl_model(120, 0, alpha_params3, beta_params3)
-    #
-    # # 2018-2021 parameters
-    # alpha_params4, beta_params4 = params(dl_params_df4)
-    # mask_2018_2021 = data['year'].isin(range(2018, 2022))
-    # if mask_2018_2021.any():
-    #     data.loc[mask_2018_2021, "PredictedRemainingRuns_Smoothed"] = apply_dl_vectorized(
-    #         data.loc[mask_2018_2021], 'BallsRemaining', 'TeamWicket', alpha_params4, beta_params4)
-    #     data.loc[mask_2018_2021, "ParInitial"] = dl_model(120, 0, alpha_params4, beta_params4)
-    #
-    # # Calculate derived metrics
-    # print("Computing impact...")
-    # data['TotalPredictedScore'] = data["PredictedRemainingRuns_Smoothed"] + data["TeamRuns"]
-    #
-    # # Impact calculation
-    # data["Impact"] = data.groupby(["MatchNum", "TeamInns"])["TotalPredictedScore"].diff()
-    #
-    # # First ball impact
-    # first_ball_mask = data.groupby(["MatchNum", "TeamInns"]).head(1).index
-    # data.loc[first_ball_mask, "Impact"] = (
-    #         data.loc[first_ball_mask, "TotalPredictedScore"] -
-    #         data.loc[first_ball_mask, "ParInitial"]
-    # )
-
-    print("Data loading complete!")
     return data
 
 # The main app function
@@ -560,7 +427,7 @@ def main():
                 final_results = final_results.sort_values(by=['Runs Scored'], ascending=False)
             else:
                 agg_cols = ['I', 'RC', 'BF', 'Out', 'Expected Runs', 'Expected Outs','Impact']
-                truevalues = combined_data.groupby(['Player','Type'], observed=True)[agg_cols].sum().reset_index()
+                truevalues = combined_data.groupby(['Player','BowlNum','Type'], observed=True)[agg_cols].sum().reset_index()
                 final_results = truemetricsbowling(truevalues)
                 final_results = final_results.sort_values(by=['Out'], ascending=False)
 
