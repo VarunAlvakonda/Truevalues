@@ -5,7 +5,7 @@ import streamlit as st
 
 def matchfactor(data,criteria,Position,typeoffactor):
 
-    final_results4 = data[data['Batting Position'] >= 0]
+    final_results4 = data[data['Batting_Position'] >= 0]
     final_results4 = data
 
     # final_results4 = final_results4[final_results4['Wickets at Entry'] <= 4]
@@ -25,9 +25,9 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results4.loc[(final_results4['BF'] > 0), 'RunswithBalls'] = final_results4['Runs']
 
     final_results5 = final_results4
-    choice4 = st.sidebar.multiselect('Batting Position:', [1,2,3,4,5,6,7,8,9,10,11,12])
+    choice4 = st.sidebar.multiselect('Batting_Position:', [1,2,3,4,5,6,7,8,9,10,11,12])
     if choice4:
-        final_results5 = final_results5[final_results5['Batting Position'].isin(choice4)]
+        final_results5 = final_results5[final_results5['Batting_Position'].isin(choice4)]
 
     print(final_results5.columns)
     # Compute EntryBalls range
@@ -65,7 +65,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
         final_results5 = final_results5[final_results5['Result'].isin(choice4)]
 
 
-    if  int(final_results5['Batting Position'].max()) >= 3:
+    if  int(final_results5['Batting_Position'].max()) >= 3:
         # Compute EntryBalls range
         min_entry = 0
         max_entry = int(final_results5['Runs at Entry'].max())
@@ -123,7 +123,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
             ]
 
 
-    df_match_totals = final_results5.groupby(['New Batter', 'Team','Start Date','Host Country','Opposition','year','HomeorAway']).agg(
+    df_match_totals = final_results5.groupby(['New Batter', 'Team','Start_Date','Host Country','Opposition','year','HomeorAway']).agg(
         Inns=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Outs=('Out', 'sum'),
@@ -135,11 +135,11 @@ def matchfactor(data,criteria,Position,typeoffactor):
     df_match_totals['Matches'] = 1
     # final_results4 = final_results2[final_results2['Wickets at Entry'] >= 0]
     # # final_results4 = final_results4[final_results4['New Batter'].isin(players)]
-    final_results4 = final_results4[final_results4['Batting Position'] <= Position]
+    final_results4 = final_results4[final_results4['Batting_Position'] <= Position]
 
     if typeoffactor == 'Team and Opposition':
         # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
-        df_match_totals2 = final_results4.groupby(['Start Date','Host Country','year']).agg(
+        df_match_totals2 = final_results4.groupby(['Start_Date','Host Country','year']).agg(
             Runs=('Runs', 'sum'),
             Outs=('Out', 'sum'),
             Balls=('BF', 'sum'),
@@ -148,9 +148,9 @@ def matchfactor(data,criteria,Position,typeoffactor):
             RunswithBalls = ('RunswithBalls','sum')
         ).reset_index()
 
-        batting = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Host Country','year',], suffixes=('', '_grouped'))
+        batting = pd.merge(df_match_totals, df_match_totals2, on=['Start_Date','Host Country','year',], suffixes=('', '_grouped'))
     else:
-        df_match_totals2 = final_results4.groupby(['Team','Start Date','Host Country','year',]).agg(
+        df_match_totals2 = final_results4.groupby(['Team','Start_Date','Host Country','year',]).agg(
             Runs=('Runs', 'sum'),
             Outs=('Out', 'sum'),
             Balls=('BF', 'sum'),
@@ -160,7 +160,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
         ).reset_index()
 
 
-        batting = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','Host Country','year'], suffixes=('', '_grouped'))
+        batting = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start_Date','Host Country','year'], suffixes=('', '_grouped'))
 
     batting['cen_diff'] = batting['Centuries_grouped'] - batting['Centuries']
     batting['FiftiesPlus_diff'] = batting['Fifties_grouped']+batting['Centuries_grouped'] - batting['Fifties'] - batting['Centuries']
@@ -243,7 +243,7 @@ def bowlmatchfactor(bowling,criteria):
     if choice4:
         bowling2 = bowling2[bowling2['Result'].isin(choice4)]
 
-    df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','Start Date','Ground','Host Country','year','OppRating']).agg(
+    df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','Start_Date','Ground','Host Country','year','OppRating']).agg(
         Inn=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Balls = ('Balls','sum'),
@@ -257,35 +257,35 @@ def bowlmatchfactor(bowling,criteria):
     if typeoffactor == 'Team and Opposition':
         # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
         if typeoftype == 'BowlType':
-            df_match_totals2 = bowling.groupby(['Start Date','BowlType','Ground','Host Country','year']).agg(
+            df_match_totals2 = bowling.groupby(['Start_Date','BowlType','Ground','Host Country','year']).agg(
                 Runs=('Runs', 'sum'),
                 Balls = ('Balls','sum'),
                 Wickets=('Wkts', 'sum'),
             ).reset_index()
-            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
+            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start_Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
         else:
-            df_match_totals2 = bowling.groupby(['Start Date','Ground','Host Country','year']).agg(
+            df_match_totals2 = bowling.groupby(['Start_Date','Ground','Host Country','year']).agg(
                 Runs=('Runs', 'sum'),
                 Balls = ('Balls','sum'),
                 Wickets=('Wkts', 'sum'),
             ).reset_index()
-            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start Date','Ground','Host Country','year'], suffixes=('', '_grouped'))
+            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Start_Date','Ground','Host Country','year'], suffixes=('', '_grouped'))
     else:
         if typeoftype == 'BowlType':
-            df_match_totals2 = bowling.groupby(['Team','Start Date','BowlType','Ground','Host Country','year']).agg(
+            df_match_totals2 = bowling.groupby(['Team','Start_Date','BowlType','Ground','Host Country','year']).agg(
                 Runs=('Runs', 'sum'),
                 Balls = ('Balls','sum'),
                 Wickets=('Wkts', 'sum'),
             ).reset_index()
 
-            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
+            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start_Date','BowlType','Ground','Host Country','year'], suffixes=('', '_grouped'))
         else:
-            df_match_totals2 = bowling.groupby(['Team','Start Date','Ground','Host Country','year']).agg(
+            df_match_totals2 = bowling.groupby(['Team','Start_Date','Ground','Host Country','year']).agg(
                 Runs=('Runs', 'sum'),
                 Balls = ('Balls','sum'),
                 Wickets=('Wkts', 'sum'),
             ).reset_index()
-            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start Date','Ground','Host Country','year'], suffixes=('', '_grouped'))
+            bowling = pd.merge(df_match_totals, df_match_totals2, on=['Team','Start_Date','Ground','Host Country','year'], suffixes=('', '_grouped'))
 
 
     bowling['run_diff'] = bowling['Runs_grouped'] - bowling['Runs']
@@ -342,9 +342,9 @@ def main():
     if choice0 == 'Batting':
         data = load_data('entrypoints.csv')
         factorchoice = st.sidebar.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team and Opposition','Team'])
-        start_pos = st.sidebar.slider('Select Batting Position Baseline:', min_value=1,max_value=12)
-        data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
-        valid_dates = data['Start Date'].dropna()
+        start_pos = st.sidebar.slider('Select Batting_Position Baseline:', min_value=1,max_value=12)
+        data['Start_Date'] = pd.to_datetime(data['Start_Date'], errors='coerce')
+        valid_dates = data['Start_Date'].dropna()
         # valid_dates = data
 
         import datetime
@@ -380,8 +380,8 @@ def main():
         # start_runs, end_runs = st.sidebar.slider('Select Minimum Runs:', min_value=1, max_value=run, value=(1, run))
         filtered_data = data
         filtered_data2 = filtered_data[
-            (filtered_data['Start Date'] >= pd.to_datetime(start_date)) & (filtered_data['Start Date'] <= pd.to_datetime(end_date))]
-        filtered_data2['year'] = pd.to_datetime(filtered_data2['Start Date'], format='mixed').dt.year
+            (filtered_data['Start_Date'] >= pd.to_datetime(start_date)) & (filtered_data['Start_Date'] <= pd.to_datetime(end_date))]
+        filtered_data2['year'] = pd.to_datetime(filtered_data2['Start_Date'], format='mixed').dt.year
 
         if choice2 == 'Individual':
             players = filtered_data2['New Batter'].unique()
@@ -440,8 +440,8 @@ def main():
             st.dataframe(results.round(2), use_container_width=True)
     else:
         data = load_data('toughwickets.csv')
-        data['Start Date'] = pd.to_datetime(data['Start Date'], errors='coerce')
-        valid_dates = data['Start Date'].dropna()
+        data['Start_Date'] = pd.to_datetime(data['Start_Date'], errors='coerce')
+        valid_dates = data['Start_Date'].dropna()
         # valid_dates = data
         import datetime
         if not valid_dates.empty:
@@ -475,8 +475,8 @@ def main():
         start_runs, end_runs = st.sidebar.slider('Select Minimum Wickets:', min_value=1, max_value=run, value=(1, run))
         filtered_data = data
         filtered_data2 = filtered_data[
-            (filtered_data['Start Date'] >= pd.to_datetime(start_date)) & (filtered_data['Start Date'] <= pd.to_datetime(end_date))]
-        filtered_data2['year'] = pd.to_datetime(filtered_data2['Start Date'], format='mixed').dt.year
+            (filtered_data['Start_Date'] >= pd.to_datetime(start_date)) & (filtered_data['Start_Date'] <= pd.to_datetime(end_date))]
+        filtered_data2['year'] = pd.to_datetime(filtered_data2['Start_Date'], format='mixed').dt.year
 
         if choice2 == 'Individual':
             players = filtered_data2['Bowler'].unique()
