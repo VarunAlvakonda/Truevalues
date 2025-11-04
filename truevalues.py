@@ -189,9 +189,9 @@ def truemetricsbowling(truevalues):
     truevalues['True W/ 10 overs'] = np.divide(truevalues['True Wickets'], (truevalues['BF'] / 60),
                                               out=np.zeros_like(truevalues['True Wickets']),
                                               where=truevalues['BF']!=0)
-    truevalues['Impact/Inns'] = np.divide(truevalues['Impact'], (truevalues['Inns']),
-                                          out=np.zeros_like(truevalues['Impact']),
-                                          where=truevalues['Inns']!=0)
+    # truevalues['Impact/Inns'] = np.divide(truevalues['Impact'], (truevalues['Inns']),
+    #                                       out=np.zeros_like(truevalues['Impact']),
+    #                                       where=truevalues['Inns']!=0)
     return truevalues
 
 def analyze_data_for_year6(year2, data2):
