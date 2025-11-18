@@ -65,6 +65,11 @@ def matchfactor(data,criteria,Position,typeoffactor):
         final_results5 = final_results5[final_results5['Result'].isin(choice4)]
 
 
+    choice4 = st.sidebar.multiselect('SeriesName:', data['SeriesName'].unique())
+
+    if choice4:
+        final_results5 = final_results5[final_results5['SeriesName'].isin(choice4)]
+
     if  int(final_results5['Batting_Position'].max()) >= 3:
         # Compute EntryBalls range
         min_entry = 0
@@ -242,6 +247,12 @@ def bowlmatchfactor(bowling,criteria):
     choice4 = st.sidebar.multiselect('Result:', bowling['Result'].unique())
     if choice4:
         bowling2 = bowling2[bowling2['Result'].isin(choice4)]
+
+
+    choice4 = st.sidebar.multiselect('SeriesName:', bowling['SeriesName'].unique())
+
+    if choice4:
+        bowling2 = bowling2[bowling2['SeriesName'].isin(choice4)]
 
     df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','Start_Date','Ground','Host Country','year','OppRating']).agg(
         Inn=('I', 'sum'),
