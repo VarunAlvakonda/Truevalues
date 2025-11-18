@@ -128,7 +128,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
             ]
 
 
-    df_match_totals = final_results5.groupby(['New Batter', 'Team','Start_Date','Host Country','Opposition','year','HomeorAway']).agg(
+    df_match_totals = final_results5.groupby(['New Batter', 'Team','Start_Date','Host Country','Opposition','year','HomeorAway','SeriesName']).agg(
         Inns=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Outs=('Out', 'sum'),
@@ -254,7 +254,7 @@ def bowlmatchfactor(bowling,criteria):
     if choice4:
         bowling2 = bowling2[bowling2['SeriesName'].isin(choice4)]
 
-    df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','Start_Date','Ground','Host Country','year','OppRating']).agg(
+    df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','Start_Date','Ground','Host Country','year','OppRating','SeriesName']).agg(
         Inn=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Balls = ('Balls','sum'),
@@ -380,7 +380,7 @@ def main():
         options = ['Overall',]
 
         # Create a select box
-        choice5 = st.sidebar.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'Opposition','year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway',])
+        choice5 = st.sidebar.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'Opposition','year',f'Top{start_pos}Average','FiftyPlusScored','CenturiesScored','HomeorAway','SeriesName'])
         choice2 = st.sidebar.selectbox('Individual Player or Everyone:', ['Individual', 'Everyone'])
         # choice3 = st.sidebar.multiselect('Home or Away:', ['Home', 'Away'])
         # choice4 = st.sidebar.multiselect('Host Country:', data['Host Country'].unique())
@@ -499,7 +499,7 @@ def main():
             filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
-        choice5 = st.sidebar.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year',])
+        choice5 = st.sidebar.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year','SeriesName',])
         x = filtered_data2
         # A button to trigger the analysis
 
