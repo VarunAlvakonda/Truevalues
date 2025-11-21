@@ -304,10 +304,15 @@ def bowlmatchfactor(bowling,criteria):
     bowling['wickets_diff'] = bowling['Wickets_grouped'] - bowling['Wickets']
 
     bowling['AveforWicket'] = (bowling['run_diff']) / (bowling['wickets_diff'])
-    bowling['AveforWicket'] = (bowling['Runs_grouped']) / (bowling['Wickets_grouped'])
+    # bowling['AveforWicket'] = (bowling['Runs_grouped']) / (bowling['Wickets_grouped'])
 
-    bowling.loc[bowling['AveforWicket'] <= 35, 'AveWicket'] = '<=30'
-    bowling.loc[bowling['AveforWicket'] > 35, 'AveWicket'] = '>30'
+    # bowling.loc[bowling['AveforWicket'] <= 35, 'AveWicket'] = '<=30'
+    # bowling.loc[bowling['AveforWicket'] > 35, 'AveWicket'] = '>30'
+    start_runs = 35
+    if criteria == ['Bowler','Team','BowlType','OtherBowlersAverage']:
+        start_runs = st.sidebar.slider('Select Average Threshold:', max_value=200)
+    bowling.loc[bowling['AveforWicket'] <= start_runs, 'OtherBowlersAverage'] = f'<={start_runs}'
+    bowling.loc[bowling['AveforWicket'] > start_runs, 'OtherBowlersAverage'] = f'>{start_runs}'
 
     if criteria == ['Bowler','Team','BowlType','Overall']:
         bowling2 = bowling.groupby(['Bowler','Team','BowlType']).agg(
@@ -337,7 +342,14 @@ def bowlmatchfactor(bowling,criteria):
     bowling2['Mean SR'] = bowling2['ball_diff']/bowling2['wickets_diff']
     bowling2['Match Factor'] = bowling2['Mean Ave']/bowling2['Ave']
     bowling2['SR Factor'] = bowling2['Mean SR']/bowling2['SR']
-    bowling2 = bowling2.drop(columns=['run_diff', 'wickets_diff','ball_diff'])
+    bowling2['mean_ave'] = (bowling2['run_diff']) / (bowling2['wickets_diff'])
+    # run = max((batting['mean_ave']).astype(int))
+    # start_runs = 35
+    # if criteria == ['Bowler','Team','BowlType','OtherBowlersAverage']:
+    #     start_runs = st.sidebar.slider('Select Average Threshold:', max_value=200)
+    # bowling2.loc[bowling2['mean_ave'] <= start_runs, 'OtherBowlersAverage'] = f'<={start_runs}'
+    # bowling2.loc[bowling2['mean_ave'] > start_runs, 'OtherBowlersAverage'] = f'>{start_runs}'
+    bowling2 = bowling2.drop(columns=['run_diff', 'wickets_diff','ball_diff','mean_ave'])
     return bowling2.round(2)
 
 
@@ -499,7 +511,7 @@ def main():
             filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
         # if choice5:
         #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
-        choice5 = st.sidebar.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year','SeriesName',])
+        choice5 = st.sidebar.selectbox('Additional Match Factor Groups:', ['Overall','Host Country', 'year','SeriesName','OtherBowlersAverage'])
         x = filtered_data2
         # A button to trigger the analysis
 
