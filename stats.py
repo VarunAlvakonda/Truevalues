@@ -644,7 +644,7 @@ def main():
                 innings_per_bowler.columns = ['Bowler', 'Innings']
 
                 # Get the maximum number of matches
-                max_matches = innings_per_bowler['Matches'].max()
+                max_matches = innings_per_bowler['Innings'].max()
 
 
                 filtered_data2 = data
