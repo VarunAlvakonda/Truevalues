@@ -695,7 +695,7 @@ def main():
                     data2.loc[peak_matches, 'ispeak'] = 'Peak'
 
 
-                streaks_summary = data2.groupby(['Bowler','Team','BowlType','PlayerID','ispeak']).agg(
+                streaks_summary = data2.groupby(['Bowler','BowlType','PlayerID','ispeak']).agg(
                     I=('I', 'sum'),
                     Runs=('Runs', 'sum'),
                     Balls = ('Balls','sum'),
