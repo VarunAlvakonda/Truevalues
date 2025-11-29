@@ -660,7 +660,7 @@ def main():
                 if choice == 'N Number of Wickets':
                     start_runs= st.sidebar.slider('Select the wicket threshold for peaks:', min_value=1,max_value=wkts)
                 else:
-                    start_runs = st.sidebar.slider('Select the match threshold for peaks:', min_value=1,max_value=max_matches)
+                    start_runs = st.sidebar.slider('Select the innings threshold for peaks:', min_value=1,max_value=max_matches)
 
 
                 # Create a new 'ispeak' column, default set to 0
