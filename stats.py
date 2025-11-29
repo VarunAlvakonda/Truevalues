@@ -128,7 +128,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
             ]
 
 
-    df_match_totals = final_results5.groupby(['New Batter', 'Team','Start_Date','Host Country','Opposition','year','HomeorAway','SeriesName']).agg(
+    df_match_totals = final_results5.groupby(['New Batter', 'Team','PlayerID','Start_Date','Host Country','Opposition','year','HomeorAway','SeriesName']).agg(
         Inns=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Outs=('Out', 'sum'),
@@ -178,11 +178,11 @@ def matchfactor(data,criteria,Position,typeoffactor):
     batting['mean_sr'] = (batting['runswithballs_diff']) / (batting['ball_diff']) * 100
     # run = max((batting['mean_ave']).astype(int))
     start_runs = 35
-    if criteria == ['New Batter','Team',f'Top{Position}Average']:
+    if criteria == ['New Batter', 'Team','PlayerID',f'Top{Position}Average']:
         start_runs = st.sidebar.slider('Select Average Threshold:', max_value=200)
     batting.loc[batting['mean_ave'] <= start_runs, f'Top{Position}Average'] = f'<={start_runs}'
     batting.loc[batting['mean_ave'] > start_runs, f'Top{Position}Average'] = f'>{start_runs}'
-    # if criteria == ['New Batter','Team','EntryPoints']:
+    # if criteria == ['New Batter', 'Team','PlayerID','EntryPoints']:
     #     batting = batting[batting['year']>=1999]
     #     start_runs = st.sidebar.slider('Select Entry Over (from 1999):', max_value=500)
     # batting.loc[batting['EntryBalls'] <= start_runs, 'EntryPoints'] = f'<={start_runs}'
@@ -194,8 +194,8 @@ def matchfactor(data,criteria,Position,typeoffactor):
 
     # batting.to_csv('toughruns.csv',index=False)
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
-    if criteria == ['New Batter','Team','Overall']:
-        final_results5 = batting.groupby(['New Batter','Team',])[
+    if criteria == ['New Batter', 'Team','PlayerID','Overall']:
+        final_results5 = batting.groupby(['New Batter', 'Team','PlayerID',])[
             ['Matches','Inns', 'Runs', 'Balls', 'Outs','Centuries','Fifties','RunswithBalls', 'Runs_grouped', 'Outs_grouped','RunswithBalls_grouped', 'run_diff', 'out_diff',
              'ball_diff','runswithballs_diff']].sum().reset_index()
     else:
@@ -222,7 +222,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     if choice4:
         final_results5 = final_results5[final_results5['Team'].isin(choice4)]
     return final_results5
-    # return final_results5[['New Batter','Team','Inns', 'Runs', 'Balls', 'Outs','ave','mean_ave','Match Factor',]].round(2)
+    # return final_results5[['New Batter', 'Team','PlayerID','Inns', 'Runs', 'Balls', 'Outs','ave','mean_ave','Match Factor',]].round(2)
 
 def bowlmatchfactor(bowling,criteria):
 
@@ -254,7 +254,7 @@ def bowlmatchfactor(bowling,criteria):
     if choice4:
         bowling2 = bowling2[bowling2['SeriesName'].isin(choice4)]
 
-    df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','Start_Date','Ground','Host Country','year','OppRating','SeriesName']).agg(
+    df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','PlayerID','Start_Date','Ground','Host Country','year','OppRating','SeriesName']).agg(
         Inn=('I', 'sum'),
         Runs=('Runs', 'sum'),
         Balls = ('Balls','sum'),
@@ -309,12 +309,12 @@ def bowlmatchfactor(bowling,criteria):
     # bowling.loc[bowling['AveforWicket'] <= 35, 'AveWicket'] = '<=30'
     # bowling.loc[bowling['AveforWicket'] > 35, 'AveWicket'] = '>30'
     start_runs = 35
-    if criteria == ['Bowler','Team','BowlType','OtherBowlersAverage']:
+    if criteria == ['Bowler','Team','BowlType','PlayerID','OtherBowlersAverage']:
         start_runs = st.sidebar.slider('Select Average Threshold:', max_value=200)
     bowling.loc[bowling['AveforWicket'] <= start_runs, 'OtherBowlersAverage'] = f'<={start_runs}'
     bowling.loc[bowling['AveforWicket'] > start_runs, 'OtherBowlersAverage'] = f'>{start_runs}'
 
-    if criteria == ['Bowler','Team','BowlType','Overall']:
+    if criteria == ['Bowler','Team','BowlType','PlayerID','Overall']:
         bowling2 = bowling.groupby(['Bowler','Team','BowlType']).agg(
             Mat=('Matches', 'sum'),
             Runs=('Runs', 'sum'),
@@ -345,7 +345,7 @@ def bowlmatchfactor(bowling,criteria):
     bowling2['mean_ave'] = (bowling2['run_diff']) / (bowling2['wickets_diff'])
     # run = max((batting['mean_ave']).astype(int))
     # start_runs = 35
-    # if criteria == ['Bowler','Team','BowlType','OtherBowlersAverage']:
+    # if criteria == ['Bowler','Team','BowlType','PlayerID','OtherBowlersAverage']:
     #     start_runs = st.sidebar.slider('Select Average Threshold:', max_value=200)
     # bowling2.loc[bowling2['mean_ave'] <= start_runs, 'OtherBowlersAverage'] = f'<={start_runs}'
     # bowling2.loc[bowling2['mean_ave'] > start_runs, 'OtherBowlersAverage'] = f'>{start_runs}'
@@ -441,7 +441,7 @@ def main():
         # if st.sidebar.button('Analyse'):
         # Call a hypothetical function to analyze data
 
-        results = matchfactor(filtered_data2,['New Batter','Team',choice5],start_pos,factorchoice)
+        results = matchfactor(filtered_data2,['New Batter', 'Team','PlayerID',choice5],start_pos,factorchoice)
         # results = results[
         #     (results['Runs'] >= start_runs) & (results['Runs'] <= end_runs)]
         # Display the results
@@ -516,7 +516,7 @@ def main():
         # A button to trigger the analysis
 
 
-        results = bowlmatchfactor(filtered_data2,['Bowler','Team','BowlType',choice5])
+        results = bowlmatchfactor(filtered_data2,['Bowler','Team','BowlType','PlayerID',choice5])
         results = results[
             (results['Wickets'] >= start_runs) & (results['Wickets'] <= end_runs)]
         if choice == 'Overall':
