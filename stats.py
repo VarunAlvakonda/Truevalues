@@ -629,10 +629,10 @@ def main():
                     st.dataframe(results.round(2), use_container_width=True)
         else:
             # Selectors for user input
-            options = ['N Number of Wickets','N Number of Tests']
+            options = ['N Number of Wickets','N Number of Innings']
 
             # Create a select box
-            choice = st.sidebar.selectbox('Do you want Peaks by Number of Tests or Wickets:', options)
+            choice = st.sidebar.selectbox('Do you want Peaks by Number of Innings or Wickets:', options)
             if choice:
                 choice2 = st.sidebar.selectbox('Individual Player or Everyone:', ['Individual', 'Everyone'])
                 choice3 = st.sidebar.multiselect('Pace or Spin:', ['Pace', 'Spin'])
@@ -687,7 +687,7 @@ def main():
 
                 # Apply the peak period calculation for each batter
                 for batter, group in data2.groupby('Bowler'):
-                    if choice == 'N Number of Tests':
+                    if choice == 'N Number of Innings':
                         peak_matches = find_peak_period_actual_runs(group,start_runs)
                     else:
                         peak_matches = find_lowest_average_200_wickets_with_leeway(group,start_runs)
@@ -695,7 +695,7 @@ def main():
 
 
                 streaks_summary = data2.groupby(['Bowler','BowlType','PlayerID','ispeak']).agg(
-                    I=('I', 'sum'),
+                    Innings=('I', 'sum'),
                     Runs=('Runs', 'sum'),
                     Balls = ('Balls','sum'),
                     Wkts=('Wkts', 'sum'),
