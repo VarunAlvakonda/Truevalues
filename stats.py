@@ -315,7 +315,7 @@ def bowlmatchfactor(bowling,criteria):
     bowling.loc[bowling['AveforWicket'] > start_runs, 'OtherBowlersAverage'] = f'>{start_runs}'
 
     if criteria == ['Bowler','Team','BowlType','PlayerID','Overall']:
-        bowling2 = bowling.groupby(['Bowler','Team','BowlType']).agg(
+        bowling2 = bowling.groupby(['Bowler','Team','BowlType','PlayerID',]).agg(
             Mat=('Matches', 'sum'),
             Runs=('Runs', 'sum'),
             Balls = ('Balls','sum'),
