@@ -733,7 +733,7 @@ def main():
                 else:
                     streaks_summary = streaks_summary.rename(columns={'Bowler': 'Bowler'})
 
-                    streaks_summary = streaks_summary.sort_values(by=['Wickets'], ascending=False)
+                    streaks_summary = streaks_summary.sort_values(by=['Match Factor'], ascending=False)
                     st.dataframe(streaks_summary.round(2), use_container_width=True)
 
 
