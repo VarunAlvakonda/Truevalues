@@ -719,6 +719,10 @@ def main():
 
                 streaks_summary = streaks_summary[streaks_summary['ispeak']=='Peak']
                 streaks_summary = streaks_summary.drop(columns=['ispeak','inn_diff','run_diff','ball_diff','out_diff','Mean Ave','Mean SR',])
+                streaks_summary['StartofPeak'] = pd.to_datetime(streaks_summary['StartofPeak']).dt.strftime('%d %b %Y')
+                streaks_summary['EndofPeak'] = pd.to_datetime(streaks_summary['EndofPeak']).dt.strftime('%d %b %Y')
+
+
                 if choice2 == 'Individual':
                     temp = []
                     for i in player:
