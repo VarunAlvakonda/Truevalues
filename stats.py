@@ -352,73 +352,94 @@ def bowlmatchfactor(bowling,criteria):
     bowling2 = bowling2.drop(columns=['run_diff', 'wickets_diff','ball_diff','mean_ave'])
     return bowling2.round(2)
 
-def find_peak_period_actual_runs(df,streak):
-    streak_length=streak
-    peak_period = []
-    min_average = float('inf')  # Start with a very high value for comparison
-    min_fac = float('inf')*-1
-    min_srfac = float('inf')*-1
-    wkts = 0
-    # For each batter's data, find 20-match rolling sum of actual runs
-    for i in range(len(df) - streak_length+1):  # Ensure there are at least 20 matches
-        run_sum = df['Runs'].iloc[i:i+streak_length].sum()
-        out_sum = df['Wkts'].iloc[i:i+streak_length].sum()
-        ball_sum = df['Balls'].iloc[i:i+streak_length].sum()
-        run_diff = df['run_diff'].iloc[i:i+streak_length].sum()
-        out_diff = df['out_diff'].iloc[i:i+streak_length].sum()
-        ball_diff = df['ball_diff'].iloc[i:i+streak_length].sum()
-        # Avoid division by zero
-        if out_sum == 0:
-            continue
+def find_peak_period_actual_runs(df, streak):
+    streak_length = streak
 
-        run_avg = run_sum / out_sum  # Average runs per wicket in this streak
-        mean_avg = run_diff / out_diff
-        run_sr = ball_sum / out_sum  # Average runs per wicket in this streak
-        mean_sr = ball_diff / out_diff
-        fac = mean_avg/run_avg
-        srfac = mean_sr/run_sr
-        # Update if we find a better (lower) average
-        # if run_avg < min_average:
-        #     min_average = run_avg
-        #     peak_period = df.index[i:i+streak_length]  # Get indices for the peak period
-        if fac > min_fac:
-            min_fac = fac
-            peak_period = df.index[i:i+streak_length]  # Get indices for the peak period
+    # Pre-calculate rolling sums using pandas rolling window
+    rolling_runs = df['Runs'].rolling(window=streak_length).sum()
+    rolling_wkts = df['Wkts'].rolling(window=streak_length).sum()
+    rolling_balls = df['Balls'].rolling(window=streak_length).sum()
+    rolling_run_diff = df['run_diff'].rolling(window=streak_length).sum()
+    rolling_out_diff = df['out_diff'].rolling(window=streak_length).sum()
+    rolling_ball_diff = df['ball_diff'].rolling(window=streak_length).sum()
+
+    # Filter out rows where wickets are 0 to avoid division by zero
+    valid_mask = (rolling_wkts > 0) & (rolling_out_diff > 0)
+
+    # Calculate metrics vectorized
+    run_avg = rolling_runs / rolling_wkts
+    mean_avg = rolling_run_diff / rolling_out_diff
+    run_sr = rolling_balls / rolling_wkts
+    mean_sr = rolling_ball_diff / rolling_out_diff
+
+    fac = mean_avg / run_avg
+    srfac = mean_sr / run_sr
+
+    # Apply mask and find maximum fac
+    fac_valid = fac[valid_mask]
+
+    if len(fac_valid) == 0:
+        return []
+
+    # Find the index of maximum fac
+    max_idx = fac_valid.idxmax()
+
+    # Return the streak starting from (max_idx - streak_length + 1) to max_idx
+    start_idx = max_idx - streak_length + 1
+    peak_period = df.index[start_idx:max_idx + 1]
+
     return peak_period
 
-def find_lowest_average_200_wickets_with_leeway(df,wickets):
+
+def find_lowest_average_200_wickets_with_leeway(df, wickets):
     target_wickets = wickets
-    lowest_average = float('inf')
-    lowest_fac = float('inf')*-1
+    lowest_fac = float('-inf')
     peak_period = []
 
-    # Iterate through each starting point in the dataset
-    for i in range(len(df)):
-        wicket_sum = 0
-        run_sum = 0
-        out_diff = 0
-        run_diff = 0
-        j = i
+    # Pre-compute cumulative sums for faster window calculations
+    cumsum_wkts = df['Wkts'].cumsum()
+    cumsum_runs = df['Runs'].cumsum()
+    cumsum_out_diff = df['out_diff'].cumsum()
+    cumsum_run_diff = df['run_diff'].cumsum()
 
-        # Accumulate runs and wickets until reaching or exceeding the target_wickets
-        while j < len(df) and wicket_sum < target_wickets:
-            wicket_sum += df['Wkts'].iloc[j]
-            run_sum += df['Runs'].iloc[j]
-            out_diff += df['out_diff'].iloc[j]
-            run_diff += df['run_diff'].iloc[j]
-            j += 1
+    n = len(df)
 
-        # Only consider streaks that reach or exceed the target
-        if wicket_sum >= target_wickets:
-            # Calculate bowling average
+    # Use numpy arrays for faster iteration
+    wkts_arr = cumsum_wkts.values
+    runs_arr = cumsum_runs.values
+    out_diff_arr = cumsum_out_diff.values
+    run_diff_arr = cumsum_run_diff.values
+
+    for i in range(n):
+        # Binary search or vectorized search for end point where wickets >= target
+        # Calculate cumulative wickets from position i
+        wickets_from_i = wkts_arr - (wkts_arr[i-1] if i > 0 else 0)
+
+        # Find first index where wickets >= target
+        valid_indices = np.where(wickets_from_i >= target_wickets)[0]
+
+        if len(valid_indices) == 0:
+            break  # No more valid streaks possible
+
+        j = valid_indices[0]
+
+        # Calculate sums for window [i, j]
+        wicket_sum = wkts_arr[j] - (wkts_arr[i-1] if i > 0 else 0)
+        run_sum = runs_arr[j] - (runs_arr[i-1] if i > 0 else 0)
+        out_diff = out_diff_arr[j] - (out_diff_arr[i-1] if i > 0 else 0)
+        run_diff = run_diff_arr[j] - (run_diff_arr[i-1] if i > 0 else 0)
+
+        if out_diff > 0:
             bowling_avg = run_sum / wicket_sum
             mean_avg = run_diff / out_diff
             bowling_fac = mean_avg / bowling_avg
-            # Update if this streak has a better (lower) average
+
             if bowling_fac > lowest_fac:
                 lowest_fac = bowling_fac
-                peak_period = df.index[i:j]  # Capture the indices of this period
+                peak_period = df.index[i:j+1]
+
     return peak_period
+
 
 
 @st.cache_data
