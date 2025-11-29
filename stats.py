@@ -355,39 +355,38 @@ def bowlmatchfactor(bowling,criteria):
 
 def find_peak_period_actual_runs(df, streak):
     streak_length = streak
+    peak_period = []
+    min_fac = float('-inf')
 
-    # Pre-calculate rolling sums using pandas rolling window
-    rolling_runs = df['Runs'].rolling(window=streak_length).sum()
-    rolling_wkts = df['Wkts'].rolling(window=streak_length).sum()
-    rolling_balls = df['Balls'].rolling(window=streak_length).sum()
-    rolling_run_diff = df['run_diff'].rolling(window=streak_length).sum()
-    rolling_out_diff = df['out_diff'].rolling(window=streak_length).sum()
-    rolling_ball_diff = df['ball_diff'].rolling(window=streak_length).sum()
+    # Convert to numpy arrays for faster iteration
+    runs = df['Runs'].values
+    wkts = df['Wkts'].values
+    balls = df['Balls'].values
+    run_diff = df['run_diff'].values
+    out_diff = df['out_diff'].values
+    ball_diff = df['ball_diff'].values
 
-    # Filter out rows where wickets are 0 to avoid division by zero
-    valid_mask = (rolling_wkts > 0) & (rolling_out_diff > 0)
+    # For each starting position
+    for i in range(len(df) - streak_length + 1):
+        run_sum = runs[i:i+streak_length].sum()
+        out_sum = wkts[i:i+streak_length].sum()
+        ball_sum = balls[i:i+streak_length].sum()
+        run_diff_sum = run_diff[i:i+streak_length].sum()
+        out_diff_sum = out_diff[i:i+streak_length].sum()
+        ball_diff_sum = ball_diff[i:i+streak_length].sum()
 
-    # Calculate metrics vectorized
-    run_avg = rolling_runs / rolling_wkts
-    mean_avg = rolling_run_diff / rolling_out_diff
-    run_sr = rolling_balls / rolling_wkts
-    mean_sr = rolling_ball_diff / rolling_out_diff
+        # Avoid division by zero
+        if out_sum == 0 or out_diff_sum == 0:
+            continue
 
-    fac = mean_avg / run_avg
-    srfac = mean_sr / run_sr
+        run_avg = run_sum / out_sum
+        mean_avg = run_diff_sum / out_diff_sum
+        fac = mean_avg / run_avg
 
-    # Apply mask and find maximum fac
-    fac_valid = fac[valid_mask]
-
-    if len(fac_valid) == 0:
-        return []
-
-    # Find the index of maximum fac
-    max_idx = fac_valid.idxmax()
-
-    # Return the streak starting from (max_idx - streak_length + 1) to max_idx
-    start_idx = max_idx - streak_length + 1
-    peak_period = df.index[start_idx:max_idx + 1]
+        # Update if we find a better (higher) fac
+        if fac > min_fac:
+            min_fac = fac
+            peak_period = df.index[i:i+streak_length]
 
     return peak_period
 
@@ -630,7 +629,7 @@ def main():
                     st.dataframe(results.round(2), use_container_width=True)
         else:
             # Selectors for user input
-            options = ['N number of Wickets','N Number of Tests']
+            options = ['N Number of Wickets','N Number of Tests']
 
             # Create a select box
             choice = st.sidebar.selectbox('Do you want Peaks by Number of Tests or Wickets:', options)
@@ -657,7 +656,7 @@ def main():
                 if choice4:
                     filtered_data2 = filtered_data2[filtered_data2['Host Country'].isin(choice4)]
 
-                if choice == 'N number of Wickets':
+                if choice == 'N Number of Wickets':
                     start_runs= st.sidebar.slider('Select the wicket threshold for peaks:', min_value=1,max_value=wkts)
                 else:
                     start_runs = st.sidebar.slider('Select the match threshold for peaks:', min_value=1,max_value=max_matches)
