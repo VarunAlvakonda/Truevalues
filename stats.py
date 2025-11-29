@@ -718,7 +718,7 @@ def main():
                 streaks_summary['Strike Rate Factor'] = streaks_summary['Mean SR']/streaks_summary['SR']
 
                 streaks_summary = streaks_summary[streaks_summary['ispeak']=='Peak']
-                streaks_summary = streaks_summary.drop(columns=['ispeak'])
+                streaks_summary = streaks_summary.drop(columns=['ispeak','inn_diff','run_diff','ball_diff','out_diff','Mean Ave','Mean SR',])
                 if choice2 == 'Individual':
                     temp = []
                     for i in player:
