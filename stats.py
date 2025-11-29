@@ -693,7 +693,6 @@ def main():
                 streaks_summary['Mean SR'] = streaks_summary['ball_diff']/streaks_summary['out_diff']
 
                 streaks_summary['Match Factor'] = streaks_summary['Mean Ave']/streaks_summary['Ave']
-                streaks_summary['Wicket Factor'] = streaks_summary['WPI']/streaks_summary['Mean WPI']
                 streaks_summary['Strike Rate Factor'] = streaks_summary['Mean SR']/streaks_summary['SR']
 
                 streaks_summary = streaks_summary[streaks_summary['ispeak']=='Peak']
