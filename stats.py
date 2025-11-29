@@ -639,11 +639,12 @@ def main():
                 choice4 = st.sidebar.multiselect('Host Country:', data['Host Country'].unique())
                 data2 = data.groupby('Bowler')[['Wkts']].sum().reset_index()
                 wkts = max((data2['Wkts']).astype(int))
-                matches_per_bowler = data.groupby('Bowler')['Start_Date'].nunique().reset_index()
-                matches_per_bowler.columns = ['Bowler', 'Matches']
+
+                innings_per_bowler = data.groupby('Bowler')['Start_Date'].count().reset_index()
+                innings_per_bowler.columns = ['Bowler', 'Innings']
 
                 # Get the maximum number of matches
-                max_matches = matches_per_bowler['Matches'].max()
+                max_matches = innings_per_bowler['Matches'].max()
 
 
                 filtered_data2 = data
