@@ -696,16 +696,16 @@ def main():
 
 
                 streaks_summary = data2.groupby(['Bowler','BowlType','PlayerID','ispeak']).agg(
+                    StartofPeak = ('Start_Date','min'),
+                    EndofPeak = ('Start_Date','max'),
                     Innings=('I', 'sum'),
+                    Wkts=('Wkts', 'sum'),
                     Runs=('Runs', 'sum'),
                     Balls = ('Balls','sum'),
-                    Wkts=('Wkts', 'sum'),
                     inn_diff=('inn_diff', 'sum'),
                     run_diff=('run_diff', 'sum'),
                     ball_diff=('ball_diff', 'sum'),
                     out_diff=('out_diff', 'sum'),
-                    StartofPeak = ('Start_Date','min'),
-                    EndofPeak = ('Start_Date','max'),
                 ).reset_index()
 
                 streaks_summary['Ave'] = streaks_summary['Runs']/streaks_summary['Wkts']
