@@ -128,7 +128,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
             (final_results5['EntryBalls'] <= entry_range[1])
             ]
 
-    final_results5['Season'] = final_results5['SeriesName'].str.extract(r', (\d{4})$')
+    final_results5['Season'] = final_results5['SeriesName'].str.extract(r', (\d{4}(?:/\d{2})?)$')
 
     df_match_totals = final_results5.groupby(['New Batter', 'Team','PlayerID','Start_Date','Host Country','Opposition','year','HomeorAway','SeriesName','Season']).agg(
         Inns=('I', 'sum'),
@@ -256,7 +256,7 @@ def bowlmatchfactor(bowling,criteria):
     if choice4:
         bowling2 = bowling2[bowling2['SeriesName'].isin(choice4)]
 
-    bowling2['Season'] = bowling2['SeriesName'].str.extract(r', (\d{4})$')
+    bowling2['Season'] = bowling2['SeriesName'].str.extract(r', (\d{4}(?:/\d{2})?)$')
     df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','PlayerID','Start_Date','Ground','Host Country','year','OppRating','SeriesName','Season']).agg(
         Inn=('I', 'sum'),
         Runs=('Runs', 'sum'),
