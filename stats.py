@@ -256,9 +256,11 @@ def bowlmatchfactor(bowling,criteria):
 
     if choice4:
         bowling2 = bowling2[bowling2['SeriesName'].isin(choice4)]
-    bowling2["SeriesName"] = bowling2["SeriesName"].fillna("WTC Final")
+
 
     bowling2['Season'] = bowling2['SeriesName'].str.extract(r', (\d{4}(?:/\d{2})?)$')
+    bowling2["SeriesName"] = bowling2["SeriesName"].fillna("WTC Final")
+
     df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','PlayerID','Start_Date','Ground','Host Country','year','OppRating','SeriesName','Season']).agg(
         Inn=('I', 'sum'),
         Runs=('Runs', 'sum'),
