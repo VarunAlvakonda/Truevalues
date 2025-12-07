@@ -133,6 +133,7 @@ def matchfactor(data,criteria,Position,typeoffactor):
     final_results5["Season"] = final_results5["Season"].fillna(
         final_results5["Start_Date"].dt.year
     )
+    final_results5 = final_results5[~final_results5['SeriesName'].isin(['ICC World Test Championship, 2019-2021','ICC World Test Championship, 2021-2023','ICC World Test Championship, 2023-2025','ICC World Test Championship, 2025-2027',"Triangular Tournament (Australia, England, South Africa in England), 1912",])]
 
     df_match_totals = final_results5.groupby(['New Batter', 'Team','PlayerID','Start_Date','Host Country','Opposition','year','HomeorAway','SeriesName','Season']).agg(
         Inns=('I', 'sum'),
@@ -265,6 +266,7 @@ def bowlmatchfactor(bowling,criteria):
     bowling2["Season"] = bowling2["Season"].fillna(
         bowling2["Start_Date"].dt.year
     )
+    bowling2 = bowling2[~bowling2['SeriesName'].isin(['ICC World Test Championship, 2019-2021','ICC World Test Championship, 2021-2023','ICC World Test Championship, 2023-2025','ICC World Test Championship, 2025-2027',"Triangular Tournament (Australia, England, South Africa in England), 1912",])]
 
     df_match_totals = bowling2.groupby(['Bowler','Team','BowlType','PlayerID','Start_Date','Ground','Host Country','year','OppRating','SeriesName','Season']).agg(
         Inn=('I', 'sum'),
