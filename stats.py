@@ -232,7 +232,6 @@ def bowlmatchfactor(bowling,criteria):
 
     # bowling = bowling[~bowling['Bowler'].isin(['R Ashwin','RA Jadeja'])]
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
-    print(bowling.dtypes)
     # bowling['Bowling Position'] = pd.to_numeric(bowling['Bowling Position'], errors='coerce')
     typeoffactor = st.sidebar.selectbox('Select Match Factor by Team or Team and Opposition:', ['Team and Opposition','Team'])
     # bowling=bowling[bowling['Bowling Position']<=4]
