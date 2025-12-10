@@ -328,7 +328,7 @@ def main():
         # Load data with caching
         data = load_data('T20DataT20Leagues_optimized.parquet')  # Changed to parquet
     elif format_choice == 'ODI':
-        data = load_data('ODIData2_optimized.parquet')  # Changed to parquet
+        data = load_data('ODIData_optimized.parquet')  # Changed to parquet
     elif format_choice == 'WT20s':
         data = load_data('WT20DataT20Leagues_optimized.parquet')
     else:
