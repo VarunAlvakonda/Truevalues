@@ -3,8 +3,8 @@ import pandas as pd
 import streamlit as st
 from scipy.optimize import curve_fit
 
-place = 'Venue_x'
-# place = 'Country'
+# place = 'Venue_x'
+place = 'Country'
 type = 'PhaseofSeason'
 type = 'BowlCat'
 type = 'entryphase'
@@ -336,6 +336,13 @@ def main():
     # data = load_data('T20DataT20Leagues_optimized.parquet')
     selected_leagues = st.sidebar.multiselect('Choose Competitions:', data['CompName'].unique())
 
+    global place
+    if format_choice == 'ODI':
+        place = 'Country'
+    elif format_choice == 'T20s' and selected_leagues and 'Twenty20 International' not in selected_leagues:
+        place = 'Venue_x'
+    else:
+        place = 'Country'  # Default for WT20s and WODI
 
     if selected_leagues:
         data = data[data['CompName'].isin(selected_leagues)]
