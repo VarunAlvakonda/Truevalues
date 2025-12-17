@@ -1368,6 +1368,7 @@ def main():
                     final_results = final_results.with_columns(
                         (pl.col('Impact') / pl.col('I')).alias('Impact/Inns')
                     )
+                    final_results = final_results.drop(["Impact"])
                 else:
                     final_results = final_results.sort('Out', descending=True)
                     final_results = final_results.drop(['Expected Runs', 'Expected Outs', 'Expected Econ', 'Expected SR'])
@@ -1396,6 +1397,7 @@ def main():
                     final_results = final_results.with_columns(
                         (pl.col('Impact') / pl.col('I')).alias('Impact/Inns')
                     )
+                    final_results = final_results.drop(["Impact"])
 
             elif choice == 'Season By Season':
                 if choice2 == 'Individual':
@@ -1438,6 +1440,7 @@ def main():
                     combined_data = combined_data.with_columns(
                         (pl.col('Impact') / pl.col('I')).alias('Impact/Inns')
                     )
+                    combined_data = combined_data.drop(["Impact"])
                 else:
                     combined_data = combined_data.sort('Year', descending=True)
                     combined_data = combined_data.drop(['Expected Runs', 'Expected Outs', 'Expected Econ'])
@@ -1466,6 +1469,7 @@ def main():
                     combined_data = combined_data.with_columns(
                         (pl.col('Impact') / pl.col('I')).alias('Impact/Inns')
                     )
+                    combined_data = combined_data.drop(["Impact"])
 
     # Display results outside the form
     if show_results:
