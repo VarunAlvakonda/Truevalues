@@ -7,3 +7,4 @@ numpy
 streamlit
 datetime
 streamlit-aggrid
+polars
