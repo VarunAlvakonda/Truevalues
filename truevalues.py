@@ -1259,9 +1259,9 @@ def main():
 
     if choice2 == 'Individual':
         if choice0 == 'Batting':
-            players = filtered_data2['Batter'].unique().to_list()
+            players = filtered_data2['Batter'].unique(maintain_order=True).to_list()
         else:
-            players = filtered_data2['Bowlers'].unique().to_list()
+            players = filtered_data2['Bowlers'].unique(maintain_order=True).to_list()
         player = st.sidebar.multiselect("Select Players:", players)
 
     choice3 = st.sidebar.multiselect('Pace or Spin:', ['Pace', 'Spin'])
@@ -1284,7 +1284,7 @@ def main():
     )
 
     # Get unique years - convert to list
-    unique_years = sorted(filtered_data2['year'].unique().to_list())
+    unique_years = sorted(filtered_data2['year'].unique(maintain_order=True).to_list())
 
     # Use form to keep sliders persistent
     with st.sidebar.form("results_form"):
@@ -1326,7 +1326,7 @@ def main():
             if choice == 'Overall Stats':
                 if choice2 == 'Individual':
                     # Filter by selected players
-                    valid_players = set(final_results['Player'].unique().to_list())
+                    valid_players = set(final_results['Player'].unique(maintain_order=True).to_list())
                     temp = [p for p in player if p in valid_players]
 
                     invalid_players = [p for p in player if p not in valid_players]
@@ -1398,7 +1398,7 @@ def main():
 
             elif choice == 'Season By Season':
                 if choice2 == 'Individual':
-                    valid_players = set(combined_data['Player'].unique().to_list())
+                    valid_players = set(combined_data['Player'].unique(maintain_order=True).to_list())
                     temp = [p for p in player if p in valid_players]
 
                     invalid_players = [p for p in player if p not in valid_players]
