@@ -65,6 +65,9 @@ def matchfactor(data,criteria,Position,typeoffactor):
     if choice4:
         final_results5 = final_results5[final_results5['Result'].isin(choice4)]
 
+    choice4 = st.sidebar.multiselect('Home or Away:', data['HomeorAway'].unique())
+    if choice4:
+        final_results5 = final_results5[final_results5['HomeorAway'].isin(choice4)]
 
     choice4 = st.sidebar.multiselect('SeriesName:', data['SeriesName'].unique())
 
