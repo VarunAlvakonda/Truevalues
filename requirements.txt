@@ -1,10 +1,9 @@
+streamlit>=1.41.0
 plotly
 matplotlib
-pygments
-scipy
 pandas
-numpy
-streamlit
-datetime
-streamlit-aggrid
 polars
+numpy
+scipy
+streamlit-aggrid
+pygments
