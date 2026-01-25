@@ -33,7 +33,7 @@ def batadjstats(df, start_date, end_date):
         filtered_data2 = filtered_data2[
             filtered_data2["Batting_Position"].isin(choice4)
         ]
-
+        
     df_match_totals = (
         filtered_data2.groupby(["New Batter", "Team", "year", "Batting_Position"])
         .agg(
@@ -221,7 +221,9 @@ def batadjstats(df, start_date, end_date):
             "expected_sr_present",
         ]
     )
-
+    choice4 = st.sidebar.multiselect("Team:", final_results5["Team"].unique())
+    if choice4:
+        final_results5 = final_results5[final_results5["Team"].isin(choice4)]
     return final_results5
 
 
