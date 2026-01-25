@@ -591,6 +591,8 @@ def bowlmatchfactor(bowling, criteria):
                 Runs=("Runs", "sum"),
                 Balls=("Balls", "sum"),
                 Wickets=("Wickets", "sum"),
+                Fiverfer=("Fiverfer", "sum"),
+                Tenfer=("Tenfer", "sum"),
                 run_diff=("run_diff", "sum"),
                 ball_diff=("ball_diff", "sum"),
                 wickets_diff=("wickets_diff", "sum"),
