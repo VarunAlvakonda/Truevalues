@@ -221,7 +221,7 @@ def batadjstats(df, start_date, end_date):
             "expected_sr_present",
         ]
     )
-    choice4 = st.multiselect("Team:", final_results5["Team"].unique())
+    choice4 = st.multiselect("Team:", sorted(final_results5["Team"].unique()))
     if choice4:
         final_results5 = final_results5[final_results5["Team"].isin(choice4)]
     return final_results5
