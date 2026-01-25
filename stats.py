@@ -465,6 +465,8 @@ def bowlmatchfactor(bowling, criteria):
     df_match_totals["Matches"] = 1
     df_match_totals["Tenfer"] = 0
     df_match_totals.loc[df_match_totals["Wickets"] >= 10, "Tenfer"] = 1
+    df_match_totals["Ninefer"] = 0
+    df_match_totals.loc[df_match_totals["Wickets"] >= 10, "Ninefer"] = 1
 
     if typeoffactor == "Team and Opposition":
         # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
@@ -577,6 +579,7 @@ def bowlmatchfactor(bowling, criteria):
                 Wickets=("Wickets", "sum"),
                 Fivefer=("Fivefer", "sum"),
                 Tenfer=("Tenfer", "sum"),
+                Ninefer=("Ninefer", "sum"),
                 run_diff=("run_diff", "sum"),
                 ball_diff=("ball_diff", "sum"),
                 wickets_diff=("wickets_diff", "sum"),
@@ -593,6 +596,7 @@ def bowlmatchfactor(bowling, criteria):
                 Wickets=("Wickets", "sum"),
                 Fivefer=("Fivefer", "sum"),
                 Tenfer=("Tenfer", "sum"),
+                Ninefer=("Ninefer", "sum"),
                 run_diff=("run_diff", "sum"),
                 ball_diff=("ball_diff", "sum"),
                 wickets_diff=("wickets_diff", "sum"),
