@@ -14,7 +14,7 @@ def batadjstats(df, start_date, end_date):
     filtered_data2 = df[(df["year"] >= start_date) & (df["year"] <= end_date)]
 
     year1, year2 = st.slider(
-        "Select Era Adjustment Baseline:",
+        "Select Era Adjustment Baseline (Default is 2016-Now):",
         min_value=1971,
         max_value=2026,
         value=(2016, 2026),
