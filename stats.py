@@ -403,6 +403,18 @@ def bowlmatchfactor(bowling, criteria):
     )
     bowling2 = bowling
 
+    choice4 = st.sidebar.multiselect(
+        "Bowling Position Baseline:", bowling["Bowling_Position"].unique()
+    )
+    if choice4:
+        bowling = bowling[bowling["Bowling_Position"].isin(choice4)]
+
+    choice4 = st.sidebar.multiselect(
+        "Bowling Position:", bowling["Bowling_Position"].unique()
+    )
+    if choice4:
+        bowling2 = bowling2[bowling2["Bowling_Position"].isin(choice4)]
+
     choice4 = st.sidebar.multiselect("Team:", bowling2["Team"].unique())
     if choice4:
         bowling2 = bowling2[bowling2["Team"].isin(choice4)]
