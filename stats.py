@@ -619,10 +619,13 @@ def bowlmatchfactor(bowling, criteria):
     # bowling2 = pd.merge(bowling2, most_frequent_team, on=criteria, suffixes=('', '_grouped'))
     bowling2["Ave"] = bowling2["Runs"] / bowling2["Wickets"]
     bowling2["SR"] = bowling2["Balls"] / bowling2["Wickets"]
+    bowling2["Econ"] = bowling2["Runs"] / bowling2["Balls"] * 6
     bowling2["Mean Ave"] = bowling2["run_diff"] / bowling2["wickets_diff"]
     bowling2["Mean SR"] = bowling2["ball_diff"] / bowling2["wickets_diff"]
+    bowling2["Mean Econ"] = bowling2["run_diff"] / bowling2["ball_diff"] * 6
     bowling2["Match Factor"] = bowling2["Mean Ave"] / bowling2["Ave"]
     bowling2["SR Factor"] = bowling2["Mean SR"] / bowling2["SR"]
+    bowling2["Econ Factor"] = bowling2["Mean Ecpm"] / bowling2["Econ"]
     bowling2["mean_ave"] = (bowling2["run_diff"]) / (bowling2["wickets_diff"])
     # run = max((batting['mean_ave']).astype(int))
     # start_runs = 35
@@ -631,7 +634,15 @@ def bowlmatchfactor(bowling, criteria):
     # bowling2.loc[bowling2['mean_ave'] <= start_runs, 'OtherBowlersAverage'] = f'<={start_runs}'
     # bowling2.loc[bowling2['mean_ave'] > start_runs, 'OtherBowlersAverage'] = f'>{start_runs}'
     bowling2 = bowling2.drop(
-        columns=["run_diff", "wickets_diff", "ball_diff", "mean_ave"]
+        columns=[
+            "run_diff",
+            "wickets_diff",
+            "ball_diff",
+            "mean_ave",
+            "Mean Ave",
+            "Mean SR",
+            "Mean Econ",
+        ]
     )
     return bowling2.round(2)
 
