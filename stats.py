@@ -625,7 +625,7 @@ def bowlmatchfactor(bowling, criteria):
     bowling2["Mean Econ"] = bowling2["run_diff"] / bowling2["ball_diff"] * 6
     bowling2["Match Factor"] = bowling2["Mean Ave"] / bowling2["Ave"]
     bowling2["SR Factor"] = bowling2["Mean SR"] / bowling2["SR"]
-    bowling2["Econ Factor"] = bowling2["Mean Ecpm"] / bowling2["Econ"]
+    bowling2["Econ Factor"] = bowling2["Mean Econ"] / bowling2["Econ"]
     bowling2["mean_ave"] = (bowling2["run_diff"]) / (bowling2["wickets_diff"])
     # run = max((batting['mean_ave']).astype(int))
     # start_runs = 35
