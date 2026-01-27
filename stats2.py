@@ -239,7 +239,7 @@ def bowladjstats(df, start_date, end_date):
         ]
 
     df_match_totals = (
-        filtered_data2.groupby(["Bowler", "BowlType", "year"])
+        filtered_data2.groupby(["Bowler", "BowlType", "Team", "year"])
         .agg(
             Matches=("Matches", "sum"),
             Inn=("I", "sum"),
@@ -280,6 +280,7 @@ def bowladjstats(df, start_date, end_date):
             [
                 "Bowler",
                 "BowlType",
+                "Team",
             ]
         )
         .agg(
@@ -365,6 +366,9 @@ def bowladjstats(df, start_date, end_date):
             "AdjWPM",
         ]
     )
+    choice4 = st.multiselect("Team:", sorted(bowling3["Team"].unique()))
+    if choice4:
+        bowling3 = bowling3[bowling3["Team"].isin(choice4)]
     return bowling3
 
 
