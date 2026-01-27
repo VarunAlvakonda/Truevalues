@@ -12,6 +12,7 @@ def load_data(filename):
 
 def batadjstats(df, start_date, end_date):
     filtered_data2 = df[(df["year"] >= start_date) & (df["year"] <= end_date)]
+    filtered_data2.loc[filtered_data2["Batting_Position"] == 2, "Batting_Position"] = 1
 
     year1, year2 = st.slider(
         "Select Era Adjustment Baseline (Default is 2016-Now):",
@@ -26,9 +27,7 @@ def batadjstats(df, start_date, end_date):
     # final_results4= final_results4[final_results4['OppRating']>1600]
     # Define the years of interest
 
-    choice4 = st.multiselect(
-        "Batting_Position:", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-    )
+    choice4 = st.multiselect("Batting_Position:", [1, 3, 4, 5, 6, 7, 8, 9, 10, 11])
     if choice4:
         filtered_data2 = filtered_data2[
             filtered_data2["Batting_Position"].isin(choice4)
@@ -229,6 +228,16 @@ def batadjstats(df, start_date, end_date):
 
 def bowladjstats(df, start_date, end_date):
     filtered_data2 = df[(df["year"] >= start_date) & (df["year"] <= end_date)]
+    filtered_data2["Matches"] = 1
+
+    choice4 = st.multiselect(
+        "Bowling Position:", filtered_data2["Bowling_Position"].unique()
+    )
+    if choice4:
+        filtered_data2 = filtered_data2[
+            filtered_data2["Bowling_Position"].isin(choice4)
+        ]
+
     df_match_totals = (
         filtered_data2.groupby(["Bowler", "BowlType", "year"])
         .agg(
@@ -299,9 +308,18 @@ def bowladjstats(df, start_date, end_date):
     bowling2["Era Econ Factor"] = bowling2["Mean Econ"] / bowling2["Econ"]
     bowling2["Era SR Factor"] = bowling2["Mean SR"] / bowling2["SR"]
 
-    years_of_interest = list(range(2016, 2026))
+    year1, year2 = st.slider(
+        "Select Era Adjustment Baseline (Default is 2016-Now):",
+        min_value=1971,
+        max_value=2026,
+        value=(2016, 2026),
+    )
+
+    years_of_interest = list(range(year1, year2 + 1))
 
     df_match_totals3 = df[df["year"].isin(years_of_interest)]
+
+    df_match_totals3["Matches"] = 1
     # # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
     df_match_totals3 = (
         df_match_totals3.groupby(["BowlType"])
@@ -321,9 +339,10 @@ def bowladjstats(df, start_date, end_date):
     bowling3["PresentSR"] = bowling3["PresentBalls"] / bowling3["PresentWickets"]
     bowling3["PresentEcon"] = bowling3["PresentRuns"] / bowling3["PresentBalls"] * 6
     bowling3["AdjAve"] = bowling3["PresentAve"] / bowling3["Era Ave Factor"]
-    bowling3["AdjSR"] = bowling3["PresentSR"] / bowling3["Era SR Factor"]
     bowling3["AdjEcon"] = bowling3["PresentEcon"] / bowling3["Era Econ Factor"]
+    bowling3["AdjSR"] = bowling3["PresentSR"] / bowling3["Era SR Factor"]
     bowling3["AdjWPM"] = (bowling3["Balls"] / bowling3["Matches"]) / bowling3["AdjSR"]
+
     bowling3 = bowling3.drop(
         columns=[
             "matches_diff",
@@ -340,6 +359,10 @@ def bowladjstats(df, start_date, end_date):
             "PresentAve",
             "PresentSR",
             "PresentEcon",
+            "Era Ave Factor",
+            "Era SR Factor",
+            "Era Econ Factor",
+            "AdjWPM",
         ]
     )
     return bowling3
@@ -376,7 +399,7 @@ def main():
 
         # Create a select box
         choice2 = st.selectbox(
-            "Individual Player or Everyone:", ["Individual", "Everyone"]
+            "Individual Player or Everyone:", ["Everyone", "Individual"]
         )
         # choice3 = st.multiselect('Home or Away:', ['Home', 'Away'])
         # choice5 = st.multiselect('Team:', data['Team'].unique())
@@ -447,11 +470,11 @@ def main():
                 ].round(2)
             )
     else:
-        filtered_data2 = load_data("odibowlinnsbyinnslist2.csv")
+        filtered_data2 = load_data("oditoughwickets.csv")
         # Create a select box
-        filtered_data2["Start Date"] = pd.to_datetime(
-            filtered_data2["Start Date"], errors="coerce"
-        )
+        # filtered_data2["Start Date"] = pd.to_datetime(
+        #     filtered_data2["Start Date"], errors="coerce"
+        # )
         # start_date = st.date_input('Start date', data['Start Date'].min())
         # end_date = st.date_input('End date', data['Start Date'].max())
         # #
@@ -463,16 +486,25 @@ def main():
         #     (data['Start Date'] >= pd.to_datetime(start_date)) & (data['Start Date'] <= pd.to_datetime(end_date))]
         #
         start_date, end_date = st.slider(
-            "Select Year:", min_value=1971, max_value=2025, value=(1971, 2025)
+            "Select Year:", min_value=1971, max_value=2026, value=(1971, 2026)
         )
-        filtered_data2["year"] = pd.to_datetime(
-            filtered_data2["Start Date"], format="mixed"
-        ).dt.year
-
+        # filtered_data2["year"] = pd.to_datetime(
+        #     filtered_data2["Start Date"], format="mixed"
+        # ).dt.year
+        data2 = (
+            filtered_data2[
+                (filtered_data2["year"] >= start_date)
+                & (filtered_data2["year"] <= end_date)
+            ]
+            .groupby("Bowler")[["Wkts"]]
+            .sum()
+            .reset_index()
+        )
+        wkts = max((data2["Wkts"]).astype(int))
         #
         choice2 = st.multiselect("Pace or Spin:", ["Pace", "Spin"])
         choice3 = st.selectbox(
-            "Individual Player or Everyone:", ["Individual", "Everyone"]
+            "Individual Player or Everyone:", ["Everyone", "Individual"]
         )
         if choice2:
             filtered_data2 = filtered_data2[filtered_data2["BowlType"].isin(choice2)]
@@ -480,30 +512,27 @@ def main():
             players = filtered_data2["Bowler"].unique()
             player = st.multiselect("Select Players:", players)
         start_wickets, end_wickets = st.slider(
-            "Select Minimum Wickets:", min_value=1, max_value=535, value=(1, 535)
+            "Select Minimum Wickets:", min_value=1, max_value=wkts, value=(1, wkts)
         )
-        if st.button("Analyse"):
-            # Call a hypothetical function to analyze data
 
-            results = bowladjstats(filtered_data2, start_date, end_date)
-            results = results[
-                (results["Wickets"] >= start_wickets)
-                & (results["Wickets"] <= end_wickets)
-            ]
+        results = bowladjstats(filtered_data2, start_date, end_date)
+        results = results[
+            (results["Wickets"] >= start_wickets) & (results["Wickets"] <= end_wickets)
+        ]
 
-            if choice3 == "Individual":
-                temp = []
-                for i in player:
-                    if i in results["Bowler"].unique():
-                        temp.append(i)
-                    else:
-                        st.subheader(f"{i} not in this list")
-                results = results[results["Bowler"].isin(temp)]
+        if choice3 == "Individual":
+            temp = []
+            for i in player:
+                if i in results["Bowler"].unique():
+                    temp.append(i)
+                else:
+                    st.subheader(f"{i} not in this list")
+            results = results[results["Bowler"].isin(temp)]
 
-                st.dataframe(results.round(2))
-            else:
-                results = results.sort_values(by=["Wickets"], ascending=False)
-                st.dataframe(results.round(2))
+            st.dataframe(results.round(2))
+        else:
+            results = results.sort_values(by=["Wickets"], ascending=False)
+            st.dataframe(results.round(2))
 
 
 # Run the main function
