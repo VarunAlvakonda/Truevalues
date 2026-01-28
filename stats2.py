@@ -227,6 +227,17 @@ def batadjstats(df, start_date, end_date):
 
 
 def bowladjstats(df, start_date, end_date):
+    year1, year2 = st.slider(
+        "Select Era Adjustment Baseline (Default is 2016-Now):",
+        min_value=1971,
+        max_value=2026,
+        value=(2016, 2026),
+    )
+
+    years_of_interest = list(range(year1, year2 + 1))
+
+    df_match_totals3 = df[df["year"].isin(years_of_interest)].copy()
+
     filtered_data2 = df[(df["year"] >= start_date) & (df["year"] <= end_date)]
     filtered_data2["Matches"] = 1
 
@@ -308,17 +319,6 @@ def bowladjstats(df, start_date, end_date):
     bowling2["Era Ave Factor"] = bowling2["Mean Ave"] / bowling2["Ave"]
     bowling2["Era Econ Factor"] = bowling2["Mean Econ"] / bowling2["Econ"]
     bowling2["Era SR Factor"] = bowling2["Mean SR"] / bowling2["SR"]
-
-    year1, year2 = st.slider(
-        "Select Era Adjustment Baseline (Default is 2016-Now):",
-        min_value=1971,
-        max_value=2026,
-        value=(2016, 2026),
-    )
-
-    years_of_interest = list(range(year1, year2 + 1))
-
-    df_match_totals3 = df[df["year"].isin(years_of_interest)]
 
     df_match_totals3["Matches"] = 1
     # # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
