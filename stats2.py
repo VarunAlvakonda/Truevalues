@@ -237,8 +237,8 @@ def bowladjstats(df, start_date, end_date):
     years_of_interest = list(range(year1, year2 + 1))
 
     df_match_totals3 = df[df["year"].isin(years_of_interest)].copy()
-
     filtered_data2 = df[(df["year"] >= start_date) & (df["year"] <= end_date)]
+    filtered_data3 = filtered_data2
     filtered_data2["Matches"] = 1
 
     choice4 = st.multiselect(
@@ -262,7 +262,7 @@ def bowladjstats(df, start_date, end_date):
     )
 
     df_match_totals2 = (
-        filtered_data2.groupby(["BowlType", "year"])
+        filtered_data3.groupby(["BowlType", "year"])
         .agg(
             Matches=("Matches", "sum"),
             Runs=("Runs", "sum"),
