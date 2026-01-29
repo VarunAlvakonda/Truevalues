@@ -41,7 +41,7 @@ def batadjstats(df, start_date, end_date):
         filtered_data3 = filtered_data3[filtered_data3["Opposition"].isin(choice4)]
 
     filtered_data3["IsKeeper"] = filtered_data3["IsKeeper"].fillna("No")
-    choice4 = st.sidebar.multiselect("Keeper:", ["Yes", "No"])
+    choice4 = st.multiselect("Keeper:", ["Yes", "No"])
 
     if choice4:
         filtered_data3 = filtered_data3[filtered_data3["IsKeeper"].isin(choice4)]
