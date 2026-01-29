@@ -33,8 +33,15 @@ def batadjstats(df, start_date, end_date):
             filtered_data2["Batting_Position"].isin(choice4)
         ]
 
+    filtered_data3 = filtered_data2.copy()
+    choice4 = st.multiselect(
+        "Opposition:", sorted(filtered_data3["Opposition"].unique())
+    )
+    if choice4:
+        filtered_data3 = filtered_data3[filtered_data3["Opposition"].isin(choice4)]
+
     df_match_totals = (
-        filtered_data2.groupby(["New Batter", "Team", "year", "Batting_Position"])
+        filtered_data3.groupby(["New Batter", "Team", "year", "Batting_Position"])
         .agg(
             Inns=("I", "sum"),
             Runs=("Runs", "sum"),
@@ -242,7 +249,7 @@ def bowladjstats(df, start_date, end_date):
     filtered_data2["Matches"] = 1
 
     choice4 = st.multiselect(
-        "Bowling Position:", filtered_data2["Bowling_Position"].unique()
+        "Bowling Position:", sorted(filtered_data2["Bowling_Position"].unique())
     )
     if choice4:
         filtered_data2 = filtered_data2[
