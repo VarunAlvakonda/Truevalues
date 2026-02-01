@@ -46,6 +46,8 @@ def batadjstats(df, start_date, end_date):
     if choice4:
         filtered_data3 = filtered_data3[filtered_data3["IsKeeper"].isin(choice4)]
 
+    choice_grp = st.selectbox("Overall or By Year:", ["Overall", "year"])
+
     df_match_totals = (
         filtered_data3.groupby(["New Batter", "Team", "year", "Batting_Position"])
         .agg(
@@ -111,24 +113,44 @@ def batadjstats(df, start_date, end_date):
     batting["Expected Fifties"] = batting["Inns"] * batting["FPI"]
     batting["Expected Centuries"] = batting["Inns"] * batting["CPI"]
 
-    final_results5 = (
-        batting.groupby(["New Batter", "Team", "Batting_Position"])[
-            [
-                "Inns",
-                "Runs",
-                "Balls",
-                "Outs",
-                "Fifties",
-                "Centuries",
-                "Expected Runs",
-                "Expected Outs",
-                "Expected Fifties",
-                "Expected Centuries",
+    if choice_grp == "year":
+        final_results5 = (
+            batting.groupby(["New Batter", "Team", "Batting_Position", "year"])[
+                [
+                    "Inns",
+                    "Runs",
+                    "Balls",
+                    "Outs",
+                    "Fifties",
+                    "Centuries",
+                    "Expected Runs",
+                    "Expected Outs",
+                    "Expected Fifties",
+                    "Expected Centuries",
+                ]
             ]
-        ]
-        .sum()
-        .reset_index()
-    )
+            .sum()
+            .reset_index()
+        )
+    else:
+        final_results5 = (
+            batting.groupby(["New Batter", "Team", "Batting_Position"])[
+                [
+                    "Inns",
+                    "Runs",
+                    "Balls",
+                    "Outs",
+                    "Fifties",
+                    "Centuries",
+                    "Expected Runs",
+                    "Expected Outs",
+                    "Expected Fifties",
+                    "Expected Centuries",
+                ]
+            ]
+            .sum()
+            .reset_index()
+        )
 
     batting = pd.merge(
         final_results5,
@@ -147,33 +169,58 @@ def batadjstats(df, start_date, end_date):
     batting["Expected Fifties 2"] = batting["Inns"] * batting["FPI"]
     batting["Expected Centuries 2"] = batting["Inns"] * batting["CPI"]
 
-    final_results5 = (
-        batting.groupby(
-            [
-                "New Batter",
-                "Team",
+    if choice_grp == "Overall":
+        final_results5 = (
+            batting.groupby(
+                [
+                    "New Batter",
+                    "Team",
+                ]
+            )[
+                [
+                    "Inns",
+                    "Runs",
+                    "Balls",
+                    "Outs",
+                    "Fifties",
+                    "Centuries",
+                    "Expected Runs",
+                    "Expected Outs",
+                    "Expected Fifties",
+                    "Expected Centuries",
+                    "Expected Runs 2",
+                    "Expected Outs 2",
+                    "Expected Fifties 2",
+                    "Expected Centuries 2",
+                ]
             ]
-        )[
-            [
-                "Inns",
-                "Runs",
-                "Balls",
-                "Outs",
-                "Fifties",
-                "Centuries",
-                "Expected Runs",
-                "Expected Outs",
-                "Expected Fifties",
-                "Expected Centuries",
-                "Expected Runs 2",
-                "Expected Outs 2",
-                "Expected Fifties 2",
-                "Expected Centuries 2",
+            .sum()
+            .reset_index()
+        )
+
+    else:
+        final_results5 = (
+            batting.groupby(["New Batter", "Team", "year"])[
+                [
+                    "Inns",
+                    "Runs",
+                    "Balls",
+                    "Outs",
+                    "Fifties",
+                    "Centuries",
+                    "Expected Runs",
+                    "Expected Outs",
+                    "Expected Fifties",
+                    "Expected Centuries",
+                    "Expected Runs 2",
+                    "Expected Outs 2",
+                    "Expected Fifties 2",
+                    "Expected Centuries 2",
+                ]
             ]
-        ]
-        .sum()
-        .reset_index()
-    )
+            .sum()
+            .reset_index()
+        )
 
     final_results5["ave"] = (final_results5["Runs"]) / (final_results5["Outs"])
     final_results5["sr"] = (final_results5["Runs"]) / (final_results5["Balls"]) * 100
@@ -231,6 +278,8 @@ def batadjstats(df, start_date, end_date):
             "expected_sr",
             "expected_ave_present",
             "expected_sr_present",
+            "InnsPerCentury",
+            "expinnsPerCentury",
         ]
     )
     choice4 = st.multiselect("Team:", sorted(final_results5["Team"].unique()))
@@ -447,44 +496,48 @@ def main():
             results = results.rename(columns={"New Batter": "Batsman"})
 
             st.dataframe(
-                results[
-                    [
-                        "Batsman",
-                        "Team",
-                        "Inns",
-                        "Runs",
-                        "Balls",
-                        "Outs",
-                        "Fifties",
-                        "Centuries",
-                        "ave",
-                        "sr",
-                        "Zulu Ave",
-                        "Zulu Sr",
-                    ]
-                ].round(2)
+                results
+                # [
+                #     [
+                #         "Batsman",
+                #         "Team",
+                #         "Inns",
+                #         "Runs",
+                #         "Balls",
+                #         "Outs",
+                #         "Fifties",
+                #         "Centuries",
+                #         "ave",
+                #         "sr",
+                #         "Zulu Ave",
+                #         "Zulu Sr",
+                #     ]
+                # ]
+                .round(2)
             )
         else:
             results = results.rename(columns={"New Batter": "Batsman"})
 
             results = results.sort_values(by=["Runs"], ascending=False)
             st.dataframe(
-                results[
-                    [
-                        "Batsman",
-                        "Team",
-                        "Inns",
-                        "Runs",
-                        "Balls",
-                        "Outs",
-                        "Fifties",
-                        "Centuries",
-                        "ave",
-                        "sr",
-                        "Zulu Ave",
-                        "Zulu Sr",
-                    ]
-                ].round(2)
+                results
+                # [
+                #     [
+                #         "Batsman",
+                #         "Team",
+                #         "Inns",
+                #         "Runs",
+                #         "Balls",
+                #         "Outs",
+                #         "Fifties",
+                #         "Centuries",
+                #         "ave",
+                #         "sr",
+                #         "Zulu Ave",
+                #         "Zulu Sr",
+                #     ]
+                # ]
+                .round(2)
             )
     else:
         filtered_data2 = load_data("oditoughwickets.csv")
