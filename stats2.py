@@ -52,6 +52,9 @@ def batadjstats(df, start_date, end_date):
         filtered_data3 = filtered_data3[filtered_data3["IsKeeper"].isin(choice4)]
 
     choice_grp = st.selectbox("Overall or By Year:", ["Overall", "year"])
+    choice4 = st.multiselect("Innings:", [1, 2])
+    if choice4:
+        filtered_data3 = filtered_data3[filtered_data3["Inns"].isin(choice4)]
 
     df_match_totals = (
         filtered_data3.groupby(["New Batter", "Team", "year", "Batting_Position"])
