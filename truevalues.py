@@ -1883,7 +1883,14 @@ def main():
                 else:
                     combined_data = combined_data.sort("Year", descending=True)
                     combined_data = combined_data.drop(
-                        ["Expected Runs", "Expected Outs", "Expected Econ"]
+                        [
+                            "Expected Runs",
+                            "Expected Outs",
+                            "Expected Econ",
+                            "Expected SR",
+                            "True Wickets",
+                            "True W/10 overs",
+                        ]
                     )
 
                     # Get max values for sliders
