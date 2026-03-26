@@ -1028,15 +1028,15 @@ def truemetricsbowling(truevalues):
     truevalues = truevalues.with_columns(
         [
             (pl.col("Expected Econ") - pl.col("Econ")).alias("True Econ"),
-            (pl.col("Out") - pl.col("Expected Outs")).alias("True Wickets"),
+            # (pl.col("Out") - pl.col("Expected Outs")).alias("True Wickets"),
             pl.when(pl.col("BF") == 0)
             .then(pl.lit(0.0))
             .otherwise((pl.col("Out") - pl.col("Expected Outs")) / (pl.col("BF") / 24))
-            .alias("True W/ 4 overs"),
-            pl.when(pl.col("BF") == 0)
-            .then(pl.lit(0.0))
-            .otherwise((pl.col("Out") - pl.col("Expected Outs")) / (pl.col("BF") / 60))
-            .alias("True W/ 10 overs"),
+            .alias("True Wickets"),
+            # pl.when(pl.col("BF") == 0)
+            # .then(pl.lit(0.0))
+            # .otherwise((pl.col("Out") - pl.col("Expected Outs")) / (pl.col("BF") / 60))
+            # .alias("True W/ 10 overs"),
         ]
     )
 
@@ -1888,8 +1888,8 @@ def main():
                             "Expected Outs",
                             "Expected Econ",
                             "Expected SR",
-                            "True Wickets",
-                            "True W/10 overs",
+                            # "True Wickets",
+                            # "True W/10 overs",
                         ]
                     )
 
