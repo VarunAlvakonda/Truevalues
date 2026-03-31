@@ -7,3 +7,8 @@ numpy
 scipy
 streamlit-aggrid
 pygments
+gradio
+polars
+numpy
+scipy
+pyarrow
