@@ -1654,7 +1654,7 @@ def main():
         choice6 = st.sidebar.multiselect(
             "Select Batting Positions:", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         )
-
+    choice7 = st.sidebar.multiselect("Select Batter Hand:", ["L", "R"])
     max_over = int(filtered_data2["over"].cast(pl.Int64).max())
     start_over, end_over = st.sidebar.slider(
         "Select Overs Range:", min_value=1, max_value=max_over, value=(1, max_over)
@@ -1677,6 +1677,8 @@ def main():
             )
         if choice6:
             player_data = player_data.filter(pl.col("BatPos").is_in(choice6))
+    if choice7:
+        player_data = player_data.filter(pl.col("BatType").is_in(choice7))
     # Get unique years from player_data
     unique_years = sorted(player_data["year"].unique(maintain_order=True).to_list())
 
