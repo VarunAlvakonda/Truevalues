@@ -1160,7 +1160,7 @@ def analyze_data_for_year3(year2, player_data, baseline_data):
     ).with_columns(pl.col("Out").fill_null(0))
 
     # Player-level aggregations — use player_data (filtered)
-    groupby_cols_player = ["Batsman", "Batter", "TeamInns", place, "over"]
+    groupby_cols_player = ["Batsman", "Batter", place, "over"]
 
     player_outs = (
         dismissed_data.group_by(groupby_cols_player)
@@ -1169,7 +1169,7 @@ def analyze_data_for_year3(year2, player_data, baseline_data):
             [
                 pl.col("Batsman"),
                 pl.col("Batter").alias("Player"),
-                pl.col("TeamInns"),
+                # pl.col("TeamInns"),
                 pl.col(place),
                 pl.col("over").alias("Over"),
                 pl.col("Out"),
@@ -1190,7 +1190,7 @@ def analyze_data_for_year3(year2, player_data, baseline_data):
             [
                 pl.col("Batsman"),
                 pl.col("Batter").alias("Player"),
-                pl.col("TeamInns"),
+                # pl.col("TeamInns"),
                 pl.col(place),
                 pl.col("over").alias("Over"),
                 pl.col("Runs Scored"),
@@ -1201,7 +1201,7 @@ def analyze_data_for_year3(year2, player_data, baseline_data):
     )
 
     # Over-level aggregations — use BASELINE (unfiltered by pace/spin etc.)
-    groupby_cols_over = ["TeamInns", place, "over"]
+    groupby_cols_over = [place, "over"]
 
     baseline_dismissed = baseline.filter(pl.col("Notes").is_in(valid))
     baseline_dismissed = baseline_dismissed.with_columns(pl.lit(1).alias("Out"))
@@ -1211,7 +1211,7 @@ def analyze_data_for_year3(year2, player_data, baseline_data):
         .agg(pl.col("Out").sum().alias("Outs"))
         .select(
             [
-                pl.col("TeamInns"),
+                # pl.col("TeamInns"),
                 pl.col(place),
                 pl.col("over").alias("Over"),
                 pl.col("Outs"),
@@ -1224,7 +1224,7 @@ def analyze_data_for_year3(year2, player_data, baseline_data):
         .agg([pl.col("Runs").sum(), pl.col("B").sum()])
         .select(
             [
-                pl.col("TeamInns"),
+                # pl.col("TeamInns"),
                 pl.col(place),
                 pl.col("over").alias("Over"),
                 pl.col("Runs"),
@@ -1235,14 +1235,12 @@ def analyze_data_for_year3(year2, player_data, baseline_data):
 
     # Combine player and over data
     combined_df = player_runs.join(
-        player_outs, on=["Batsman", "Player", "TeamInns", place, "Over"], how="left"
+        player_outs, on=["Batsman", "Player", place, "Over"], how="left"
     )
 
-    combined_df2 = over_runs.join(over_outs, on=["TeamInns", place, "Over"], how="left")
+    combined_df2 = over_runs.join(over_outs, on=[place, "Over"], how="left")
 
-    combined_df3 = combined_df.join(
-        combined_df2, on=["TeamInns", place, "Over"], how="left"
-    )
+    combined_df3 = combined_df.join(combined_df2, on=[place, "Over"], how="left")
 
     # Fill nulls
     combined_df3 = combined_df3.with_columns(
