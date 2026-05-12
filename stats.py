@@ -745,7 +745,7 @@ def main():
     st.sidebar.title("Match Factor")
     choice0 = st.sidebar.selectbox("Batting Or Bowling:", ["Batting", "Bowling"])
     if choice0 == "Batting":
-        data = load_data("entrypoints.csv")
+        data = load_data("entrypointstest.csv")
         factorchoice = st.sidebar.selectbox(
             "Select Match Factor by Team or Team and Opposition:",
             ["Team and Opposition", "Team"],
@@ -879,7 +879,7 @@ def main():
             results = results.sort_values(by=["Runs"], ascending=False)
             st.dataframe(results.round(2), use_container_width=True)
     else:
-        data = load_data("toughwickets.csv")
+        data = load_data("testtoughwickets.csv")
         data["Start_Date"] = pd.to_datetime(data["Start_Date"], errors="coerce")
         valid_dates = data["Start_Date"].dropna()
         # valid_dates = data
