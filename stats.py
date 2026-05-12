@@ -751,7 +751,10 @@ def main():
             ["Team and Opposition", "Team"],
         )
         start_pos = st.sidebar.slider(
-            "Select Batting_Position Baseline:", min_value=1, max_value=12
+            "Select Batting_Position Baseline:",
+            min_value=1,
+            max_value=12,
+            value=(6),
         )
         data["Start_Date"] = pd.to_datetime(data["Start_Date"], errors="coerce")
         valid_dates = data["Start_Date"].dropna()
