@@ -39,23 +39,6 @@ def matchfactor(data, criteria, Position, typeoffactor):
         ]
 
     print(final_results5.columns)
-    # Compute EntryBalls range
-    min_age = int(final_results5["Age"].min())
-    max_age = int(final_results5["Age"].max())
-    # Slider for EntryBalls
-    age_rage = st.sidebar.slider(
-        "Choose Age Range:",
-        min_value=min_age,
-        max_value=max_age,
-        value=(min_age, max_age),
-    )
-
-    # Apply filter only if slider is changed from default
-    if age_rage != (min_age, max_age):
-        final_results5 = final_results5[
-            (final_results5["Age"] >= age_rage[0])
-            & (final_results5["Age"] <= age_rage[1])
-        ]
 
     choice4 = st.sidebar.multiselect("Host Country:", data["Host Country"].unique())
     if choice4:
@@ -81,6 +64,39 @@ def matchfactor(data, criteria, Position, typeoffactor):
 
     if choice4:
         final_results5 = final_results5[final_results5["SeriesName"].isin(choice4)]
+
+    # Compute EntryBalls range
+    min_age = int(final_results5["Age"].min())
+    max_age = int(final_results5["Age"].max())
+    # Slider for EntryBalls
+    age_rage = st.sidebar.slider(
+        "Choose Age Range:",
+        min_value=min_age,
+        max_value=max_age,
+        value=(min_age, max_age),
+    )
+
+    # Apply filter only if slider is changed from default
+    if age_rage != (min_age, max_age):
+        final_results5 = final_results5[
+            (final_results5["Age"] >= age_rage[0])
+            & (final_results5["Age"] <= age_rage[1])
+        ]
+
+    min_teamruns = 0
+    max_teamruns = int(final_results5["Team_Runs"].max())
+    # Slider for EntryBalls
+    teamruns_range = st.sidebar.slider(
+        "Choose Runs at Entry",
+        min_value=min_teamruns,
+        max_value=max_teamruns,
+        value=(min_teamruns, max_teamruns),
+    )
+
+    final_results5 = final_results5[
+        (final_results5["Team_Runs"] >= teamruns_range[0])
+        & (final_results5["Team_Runs"] <= teamruns_range[1])
+    ]
 
     if int(final_results5["Batting_Position"].max()) >= 3:
         # Compute EntryBalls range
