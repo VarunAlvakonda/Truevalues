@@ -87,7 +87,7 @@ def matchfactor(data, criteria, Position, typeoffactor):
     max_teamruns = int(final_results5["Team_Runs"].max())
     # Slider for EntryBalls
     teamruns_range = st.sidebar.slider(
-        "Choose Runs at Entry",
+        "Choose Team_Runs",
         min_value=min_teamruns,
         max_value=max_teamruns,
         value=(min_teamruns, max_teamruns),
