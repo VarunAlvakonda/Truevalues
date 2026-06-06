@@ -973,6 +973,7 @@ def main():
                 "Additional Match Factor Groups:",
                 [
                     "Overall",
+                    "HomeorAway",
                     "Host Country",
                     "year",
                     "SeriesName",
