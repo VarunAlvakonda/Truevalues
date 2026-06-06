@@ -83,14 +83,14 @@ def matchfactor(data, criteria, Position, typeoffactor):
             & (final_results5["Age"] <= age_rage[1])
         ]
 
-    min_targetruns = 0
-    max_targetruns = int(final_results5["Target"].max())
+    min_teamruns = 0
+    max_teamruns = int(final_results5["Team_Runs"].max())
     # Slider for EntryBalls
     teamruns_range = st.sidebar.slider(
-        "Choose Target Runs",
-        min_value=min_targetruns,
-        max_value=max_targetruns,
-        value=(min_targetruns, max_targetruns),
+        "Choose Team Runs",
+        min_value=min_teamruns,
+        max_value=max_teamruns,
+        value=(min_teamruns, max_teamruns),
     )
 
     final_results5 = final_results5[
