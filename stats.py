@@ -473,6 +473,7 @@ def bowlmatchfactor(bowling, criteria):
                 "Start_Date",
                 "Ground",
                 "Host Country",
+                "HomeorAway",
                 "year",
                 "OppRating",
                 "SeriesName",
