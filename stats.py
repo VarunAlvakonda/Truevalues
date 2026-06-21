@@ -603,6 +603,7 @@ def bowlmatchfactor(bowling, criteria):
             )
             .agg(
                 Mat=("Matches", "sum"),
+                Inn=("Inn", "sum"),
                 Runs=("Runs", "sum"),
                 Balls=("Balls", "sum"),
                 Wickets=("Wickets", "sum"),
@@ -620,6 +621,7 @@ def bowlmatchfactor(bowling, criteria):
             bowling.groupby(criteria)
             .agg(
                 Mat=("Matches", "sum"),
+                Inn=("Inn", "sum"),
                 Runs=("Runs", "sum"),
                 Balls=("Balls", "sum"),
                 Wickets=("Wickets", "sum"),
