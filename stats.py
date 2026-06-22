@@ -1096,9 +1096,9 @@ def main():
                 data2["ball_diff"] = data2["BallsTotal"] - data2["Balls"]
 
                 data2["I"] = 1
-
+                print(data2.columns)
                 # Apply the peak period calculation for each batter
-                for batter, group in data2.groupby(["Bowler", "PlayedID"]):
+                for batter, group in data2.groupby(["Bowler", "PlayerID"]):
                     if choice == "N Number of Innings":
                         peak_matches = find_peak_period_actual_runs(group, start_runs)
                     else:
