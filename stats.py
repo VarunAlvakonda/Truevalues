@@ -1031,9 +1031,11 @@ def main():
                 wkts = max((data2["Wkts"]).astype(int))
 
                 innings_per_bowler = (
-                    data.groupby("Bowler")["Start_Date"].count().reset_index()
+                    data.groupby(["Bowler", "PlayerID"])["Start_Date"]
+                    .count()
+                    .reset_index()
                 )
-                innings_per_bowler.columns = ["Bowler", "Innings"]
+                innings_per_bowler.columns = ["Bowler", "PlayerID", "Innings"]
 
                 # Get the maximum number of matches
                 max_matches = innings_per_bowler["Innings"].max()
@@ -1096,7 +1098,7 @@ def main():
                 data2["I"] = 1
 
                 # Apply the peak period calculation for each batter
-                for batter, group in data2.groupby("Bowler"):
+                for batter, group in data2.groupby(["Bowler", "PlayedID"]):
                     if choice == "N Number of Innings":
                         peak_matches = find_peak_period_actual_runs(group, start_runs)
                     else:
@@ -1108,8 +1110,8 @@ def main():
                 streaks_summary = (
                     data2.groupby(["Bowler", "BowlType", "PlayerID", "ispeak"])
                     .agg(
-                        StartofPeak=("Start_Date", "min"),
-                        EndofPeak=("Start_Date", "max"),
+                        # StartofPeak=("Start_Date", "min"),
+                        # EndofPeak=("Start_Date", "max"),
                         Innings=("I", "sum"),
                         Wkts=("Wkts", "sum"),
                         Runs=("Runs", "sum"),
@@ -1156,12 +1158,12 @@ def main():
                         "Mean SR",
                     ]
                 )
-                streaks_summary["StartofPeak"] = pd.to_datetime(
-                    streaks_summary["StartofPeak"]
-                ).dt.strftime("%d %b %Y")
-                streaks_summary["EndofPeak"] = pd.to_datetime(
-                    streaks_summary["EndofPeak"]
-                ).dt.strftime("%d %b %Y")
+                # streaks_summary["StartofPeak"] = pd.to_datetime(
+                #     streaks_summary["StartofPeak"]
+                # ).dt.strftime("%d %b %Y")
+                # streaks_summary["EndofPeak"] = pd.to_datetime(
+                #     streaks_summary["EndofPeak"]
+                # ).dt.strftime("%d %b %Y")
 
                 if choice2 == "Individual":
                     temp = []
