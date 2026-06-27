@@ -382,6 +382,10 @@ def matchfactor(data, criteria, Position, typeoffactor):
             "runswithballs_diff",
         ]
     )
+    choice4 = st.sidebar.multiselect("Team:", data["Team"].unique())
+    if choice4:
+        final_results5 = final_results5[final_results5["Team"].isin(choice4)]
+
     inns = max((final_results5["Inns"]).astype(int))
     start_inns, end_inns = st.sidebar.slider(
         "Select Minimum Inns:", min_value=0, max_value=inns, value=(0, inns)
@@ -406,9 +410,6 @@ def matchfactor(data, criteria, Position, typeoffactor):
         (final_results5["Balls"] >= start_balls)
         & (final_results5["Balls"] <= end_balls)
     ]
-    choice4 = st.sidebar.multiselect("Team:", data["Team"].unique())
-    if choice4:
-        final_results5 = final_results5[final_results5["Team"].isin(choice4)]
     return final_results5
     # return final_results5[['New Batter', 'Team','PlayerID','Inns', 'Runs', 'Balls', 'Outs','ave','mean_ave','Match Factor',]].round(2)
 
