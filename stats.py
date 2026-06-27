@@ -274,7 +274,7 @@ def matchfactor(data, criteria, Position, typeoffactor):
     batting["mean_sr"] = (batting["runswithballs_diff"]) / (batting["ball_diff"]) * 100
     # run = max((batting['mean_ave']).astype(int))
     start_runs = 35
-    if criteria == ["New Batter", "Team", "PlayerID", f"Top{Position}Average"]:
+    if f"Top{Position}Average" in criteria:
         start_runs = st.sidebar.slider("Select Average Threshold:", max_value=200)
     batting.loc[batting["mean_ave"] <= start_runs, f"Top{Position}Average"] = (
         f"<={start_runs}"
@@ -296,7 +296,7 @@ def matchfactor(data, criteria, Position, typeoffactor):
 
     # batting.to_csv('toughruns.csv',index=False)
     # Group by Match_ID and Batter, then calculate the total runs and outs for each player in each match
-    if criteria == ["New Batter", "Team", "PlayerID", "Overall"]:
+    if criteria == []:
         final_results5 = (
             batting.groupby(
                 [
@@ -582,8 +582,11 @@ def bowlmatchfactor(bowling, criteria):
     # bowling.loc[bowling['AveforWicket'] <= 35, 'AveWicket'] = '<=30'
     # bowling.loc[bowling['AveforWicket'] > 35, 'AveWicket'] = '>30'
     start_runs = 35
-    if criteria == ["Bowler", "Team", "BowlType", "PlayerID", "OtherBowlersAverage"]:
+    # if criteria == ["Bowler", "Team", "BowlType", "PlayerID", "OtherBowlersAverage"]:
+    # start_runs = st.sidebar.slider("Select Average Threshold:", max_value=200)
+    if "OtherBowlersAverage" in criteria:
         start_runs = st.sidebar.slider("Select Average Threshold:", max_value=200)
+
     bowling.loc[bowling["AveforWicket"] <= start_runs, "OtherBowlersAverage"] = (
         f"<={start_runs}"
     )
@@ -591,7 +594,8 @@ def bowlmatchfactor(bowling, criteria):
         f">{start_runs}"
     )
 
-    if criteria == ["Bowler", "Team", "BowlType", "PlayerID", "Overall"]:
+    # if criteria == ["Bowler", "Team", "BowlType", "PlayerID", "Overall"]:
+    if criteria == []:
         bowling2 = (
             bowling.groupby(
                 [
@@ -808,16 +812,16 @@ def main():
         ]
 
         # Create a select box
-        choice5 = st.sidebar.selectbox(
+        choice5 = st.sidebar.multiselect(
             "Additional Match Factor Groups:",
             [
-                "Overall",
+                # "Overall",
                 "Host Country",
                 "Opposition",
                 "year",
                 f"Top{start_pos}Average",
-                "FiftyPlusScored",
-                "CenturiesScored",
+                # "FiftyPlusScored",
+                # "CenturiesScored",
                 "HomeorAway",
                 "SeriesName",
                 "Season",
@@ -877,7 +881,7 @@ def main():
 
         results = matchfactor(
             filtered_data2,
-            ["New Batter", "Team", "PlayerID", choice5],
+            ["New Batter", "Team", "PlayerID"] + choice5,
             start_pos,
             factorchoice,
         )
@@ -972,10 +976,10 @@ def main():
                 ]
             # if choice5:
             #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
-            choice5 = st.sidebar.selectbox(
+            choice5 = st.sidebar.multiselect(
                 "Additional Match Factor Groups:",
                 [
-                    "Overall",
+                    # "Overall",
                     "HomeorAway",
                     "Host Country",
                     "year",
@@ -988,7 +992,7 @@ def main():
             # A button to trigger the analysis
 
             results = bowlmatchfactor(
-                filtered_data2, ["Bowler", "Team", "BowlType", "PlayerID", choice5]
+                filtered_data2, ["Bowler", "Team", "BowlType", "PlayerID"] + choice5
             )
             results = results[
                 (results["Wickets"] >= start_runs) & (results["Wickets"] <= end_runs)
