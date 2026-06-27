@@ -816,15 +816,16 @@ def main():
             "Additional Match Factor Groups:",
             [
                 # "Overall",
+                "Batting_Position",
                 "Host Country",
                 "Opposition",
+                "Season",
                 "year",
                 f"Top{start_pos}Average",
                 # "FiftyPlusScored",
                 # "CenturiesScored",
                 "HomeorAway",
                 "SeriesName",
-                "Season",
             ],
         )
         choice2 = st.sidebar.selectbox(
