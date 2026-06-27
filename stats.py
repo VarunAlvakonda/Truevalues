@@ -382,6 +382,14 @@ def matchfactor(data, criteria, Position, typeoffactor):
             "runswithballs_diff",
         ]
     )
+    inns = max((final_results5["Inns"]).astype(int))
+    start_inns, end_inns = st.sidebar.slider(
+        "Select Minimum Inns:", min_value=0, max_value=inns, value=(0, inns)
+    )
+
+    final_results5 = final_results5[
+        (final_results5["Inns"] >= start_inns) & (final_results5["Inns"] <= end_inns)
+    ]
     run = max((final_results5["Runs"]).astype(int))
     start_runs, end_runs = st.sidebar.slider(
         "Select Minimum Runs:", min_value=0, max_value=run, value=(1, run)
