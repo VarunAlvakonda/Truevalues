@@ -816,7 +816,7 @@ def main():
             "Additional Match Factor Groups:",
             [
                 # "Overall",
-                "Batting_Position",
+                # "Batting_Position",
                 "Host Country",
                 "Opposition",
                 "Season",
