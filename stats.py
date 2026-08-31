@@ -927,281 +927,97 @@ def main():
             min_dt = datetime.date(2000, 1, 1)
             max_dt = datetime.date(2030, 1, 1)
 
-        peaksornot = st.sidebar.selectbox("Bowling Peaks:", ["No", "Yes"])
-        if peaksornot == "No":
-            start_date = st.sidebar.date_input(
-                "Start date", min_value=min_dt, max_value=max_dt, value=min_dt
-            )
-            end_date = st.sidebar.date_input(
-                "End date", min_value=min_dt, max_value=max_dt, value=max_dt
-            )
+        start_date = st.sidebar.date_input(
+            "Start date", min_value=min_dt, max_value=max_dt, value=min_dt
+        )
+        end_date = st.sidebar.date_input(
+            "End date", min_value=min_dt, max_value=max_dt, value=max_dt
+        )
 
-            # Filtering data based on the user's date selection
-            if start_date > end_date:
-                st.sidebar.error("Error: End date must be greater than start date.")
+        # Filtering data based on the user's date selection
+        if start_date > end_date:
+            st.sidebar.error("Error: End date must be greater than start date.")
 
-            data2 = data.groupby("Bowler")[["Wkts"]].sum().reset_index()
-            run = max((data2["Wkts"]).astype(int))
+        data2 = data.groupby("Bowler")[["Wkts"]].sum().reset_index()
+        run = max((data2["Wkts"]).astype(int))
 
-            # Selectors for user input
-            options = [
-                "Overall",
+        # Selectors for user input
+        options = [
+            "Overall",
+        ]
+
+        # Create a select box
+        choice = st.sidebar.selectbox("Select your option:", options)
+        choice2 = st.sidebar.selectbox(
+            "Individual Player or Everyone:", ["Individual", "Everyone"]
+        )
+        choice3 = st.sidebar.multiselect("Pace or Spin:", ["Pace", "Spin"])
+        choice4 = st.sidebar.multiselect("Host Country:", data["Host Country"].unique())
+        # choice5 = st.sidebar.multiselect('Team:', data['Team'].unique())
+        #    Filtering data based on the user's Date selection
+        start_runs, end_runs = st.sidebar.slider(
+            "Select Minimum Wickets:", min_value=1, max_value=run, value=(1, run)
+        )
+        filtered_data = data
+        filtered_data2 = filtered_data[
+            (filtered_data["Start_Date"] >= pd.to_datetime(start_date))
+            & (filtered_data["Start_Date"] <= pd.to_datetime(end_date))
+        ]
+        filtered_data2["year"] = pd.to_datetime(
+            filtered_data2["Start_Date"], format="mixed"
+        ).dt.year
+
+        if choice2 == "Individual":
+            players = filtered_data2["Bowler"].unique()
+            player = st.sidebar.multiselect("Select Players:", players)
+            # name = st.sidebar.selectbox('Choose the Player From the list', data['striker'].unique())
+        if choice3:
+            filtered_data2 = filtered_data2[filtered_data2["BowlType"].isin(choice3)]
+        if choice4:
+            filtered_data2 = filtered_data2[
+                filtered_data2["Host Country"].isin(choice4)
             ]
+        # if choice5:
+        #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
+        choice5 = st.sidebar.multiselect(
+            "Additional Match Factor Groups:",
+            [
+                # "Overall",
+                "HomeorAway",
+                "Host Country",
+                "year",
+                "SeriesName",
+                "OtherBowlersAverage",
+                "Season",
+            ],
+        )
+        x = filtered_data2
+        # A button to trigger the analysis
 
-            # Create a select box
-            choice = st.sidebar.selectbox("Select your option:", options)
-            choice2 = st.sidebar.selectbox(
-                "Individual Player or Everyone:", ["Individual", "Everyone"]
-            )
-            choice3 = st.sidebar.multiselect("Pace or Spin:", ["Pace", "Spin"])
-            choice4 = st.sidebar.multiselect(
-                "Host Country:", data["Host Country"].unique()
-            )
-            # choice5 = st.sidebar.multiselect('Team:', data['Team'].unique())
-            #    Filtering data based on the user's Date selection
-            start_runs, end_runs = st.sidebar.slider(
-                "Select Minimum Wickets:", min_value=1, max_value=run, value=(1, run)
-            )
-            filtered_data = data
-            filtered_data2 = filtered_data[
-                (filtered_data["Start_Date"] >= pd.to_datetime(start_date))
-                & (filtered_data["Start_Date"] <= pd.to_datetime(end_date))
-            ]
-            filtered_data2["year"] = pd.to_datetime(
-                filtered_data2["Start_Date"], format="mixed"
-            ).dt.year
-
+        results = bowlmatchfactor(
+            filtered_data2, ["Bowler", "Team", "BowlType", "PlayerID"] + choice5
+        )
+        results = results[
+            (results["Wickets"] >= start_runs) & (results["Wickets"] <= end_runs)
+        ]
+        if choice == "Overall":
+            # Display the results
             if choice2 == "Individual":
-                players = filtered_data2["Bowler"].unique()
-                player = st.sidebar.multiselect("Select Players:", players)
-                # name = st.sidebar.selectbox('Choose the Player From the list', data['striker'].unique())
-            if choice3:
-                filtered_data2 = filtered_data2[
-                    filtered_data2["BowlType"].isin(choice3)
-                ]
-            if choice4:
-                filtered_data2 = filtered_data2[
-                    filtered_data2["Host Country"].isin(choice4)
-                ]
-            # if choice5:
-            #     filtered_data2 = filtered_data2[filtered_data2['Team'].isin(choice5)]
-            choice5 = st.sidebar.multiselect(
-                "Additional Match Factor Groups:",
-                [
-                    # "Overall",
-                    "HomeorAway",
-                    "Host Country",
-                    "year",
-                    "SeriesName",
-                    "OtherBowlersAverage",
-                    "Season",
-                ],
-            )
-            x = filtered_data2
-            # A button to trigger the analysis
-
-            results = bowlmatchfactor(
-                filtered_data2, ["Bowler", "Team", "BowlType", "PlayerID"] + choice5
-            )
-            results = results[
-                (results["Wickets"] >= start_runs) & (results["Wickets"] <= end_runs)
-            ]
-            if choice == "Overall":
-                # Display the results
-                if choice2 == "Individual":
-                    temp = []
-                    for i in player:
-                        if i in results["Bowler"].unique():
-                            temp.append(i)
-                        else:
-                            st.sidebar.subheader(f"{i} not in this list")
-                    results = results[results["Bowler"].isin(temp)]
-                    results = results.rename(columns={"Bowler": "Bowler"})
-
-                    st.dataframe(results.round(2), use_container_width=True)
-                else:
-                    results = results.rename(columns={"Bowler": "Bowler"})
-
-                    results = results.sort_values(by=["Wickets"], ascending=False)
-                    st.dataframe(results.round(2), use_container_width=True)
-        else:
-            # Selectors for user input
-            options = ["N Number of Wickets", "N Number of Innings"]
-
-            # Create a select box
-            choice = st.sidebar.selectbox(
-                "Do you want Peaks by Number of Innings or Wickets:", options
-            )
-            if choice:
-                choice2 = st.sidebar.selectbox(
-                    "Individual Player or Everyone:", ["Individual", "Everyone"]
-                )
-                choice3 = st.sidebar.multiselect("Pace or Spin:", ["Pace", "Spin"])
-                choice4 = st.sidebar.multiselect(
-                    "Host Country:", data["Host Country"].unique()
-                )
-                data2 = data.groupby("Bowler")[["Wkts"]].sum().reset_index()
-                wkts = max((data2["Wkts"]).astype(int))
-
-                innings_per_bowler = (
-                    data.groupby(["Bowler", "PlayerID"])["Start_Date"]
-                    .count()
-                    .reset_index()
-                )
-                innings_per_bowler.columns = ["Bowler", "PlayerID", "Innings"]
-
-                # Get the maximum number of matches
-                max_matches = innings_per_bowler["Innings"].max()
-
-                filtered_data2 = data
-                if choice2 == "Individual":
-                    players = filtered_data2["Bowler"].unique()
-                    player = st.sidebar.multiselect("Select Players:", players)
-                    # name = st.sidebar.selectbox('Choose the Player From the list', data['striker'].unique())
-                if choice3:
-                    filtered_data2 = filtered_data2[
-                        filtered_data2["BowlType"].isin(choice3)
-                    ]
-                if choice4:
-                    filtered_data2 = filtered_data2[
-                        filtered_data2["Host Country"].isin(choice4)
-                    ]
-
-                if choice == "N Number of Wickets":
-                    start_runs = st.sidebar.slider(
-                        "Select the wicket threshold for peaks:",
-                        min_value=1,
-                        max_value=wkts,
-                    )
-                else:
-                    start_runs = st.sidebar.slider(
-                        "Select the innings threshold for peaks:",
-                        min_value=1,
-                        max_value=max_matches,
-                    )
-
-                # Create a new 'ispeak' column, default set to 0
-                filtered_data2["ispeak"] = "NotPeak"
-
-                final_results4 = (
-                    filtered_data2.groupby(["BowlType", "Start_Date", "Host Country"])
-                    .agg(
-                        InnsTotal=("I", "sum"),
-                        RunsTotal=("Runs", "sum"),
-                        OutsTotal=("Wkts", "sum"),
-                        BallsTotal=("Balls", "sum"),
-                    )
-                    .reset_index()
-                )
-
-                data2 = pd.merge(
-                    filtered_data2,
-                    final_results4,
-                    on=["BowlType", "Start_Date", "Host Country"],
-                    how="left",
-                )
-
-                data2 = data2.drop_duplicates()
-
-                data2["inn_diff"] = data2["InnsTotal"] - data2["I"]
-                data2["run_diff"] = data2["RunsTotal"] - data2["Runs"]
-                data2["out_diff"] = data2["OutsTotal"] - data2["Wkts"]
-                data2["ball_diff"] = data2["BallsTotal"] - data2["Balls"]
-
-                data2["I"] = 1
-                print(data2.columns)
-                # Apply the peak period calculation for each batter
-                for batter, group in data2.groupby(["Bowler", "PlayerID"]):
-                    if choice == "N Number of Innings":
-                        peak_matches = find_peak_period_actual_runs(group, start_runs)
+                temp = []
+                for i in player:
+                    if i in results["Bowler"].unique():
+                        temp.append(i)
                     else:
-                        peak_matches = find_lowest_average_200_wickets_with_leeway(
-                            group, start_runs
-                        )
-                    data2.loc[peak_matches, "ispeak"] = "Peak"
+                        st.sidebar.subheader(f"{i} not in this list")
+                results = results[results["Bowler"].isin(temp)]
+                results = results.rename(columns={"Bowler": "Bowler"})
 
-                streaks_summary = (
-                    data2.groupby(["Bowler", "BowlType", "PlayerID", "ispeak"])
-                    .agg(
-                        # StartofPeak=("Start_Date", "min"),
-                        # EndofPeak=("Start_Date", "max"),
-                        Innings=("I", "sum"),
-                        Wkts=("Wkts", "sum"),
-                        Runs=("Runs", "sum"),
-                        Balls=("Balls", "sum"),
-                        inn_diff=("inn_diff", "sum"),
-                        run_diff=("run_diff", "sum"),
-                        ball_diff=("ball_diff", "sum"),
-                        out_diff=("out_diff", "sum"),
-                    )
-                    .reset_index()
-                )
+                st.dataframe(results.round(2), use_container_width=True)
+            else:
+                results = results.rename(columns={"Bowler": "Bowler"})
 
-                streaks_summary["Ave"] = (
-                    streaks_summary["Runs"] / streaks_summary["Wkts"]
-                )
-                streaks_summary["Mean Ave"] = (
-                    streaks_summary["run_diff"] / streaks_summary["out_diff"]
-                )
-
-                streaks_summary["SR"] = (
-                    streaks_summary["Balls"] / streaks_summary["Wkts"]
-                )
-                streaks_summary["Mean SR"] = (
-                    streaks_summary["ball_diff"] / streaks_summary["out_diff"]
-                )
-
-                streaks_summary["Match Factor"] = (
-                    streaks_summary["Mean Ave"] / streaks_summary["Ave"]
-                )
-                streaks_summary["Strike Rate Factor"] = (
-                    streaks_summary["Mean SR"] / streaks_summary["SR"]
-                )
-
-                streaks_summary = streaks_summary[streaks_summary["ispeak"] == "Peak"]
-                streaks_summary = streaks_summary.drop(
-                    columns=[
-                        "PlayerID",
-                        "ispeak",
-                        "inn_diff",
-                        "run_diff",
-                        "ball_diff",
-                        "out_diff",
-                        "Mean Ave",
-                        "Mean SR",
-                    ]
-                )
-                # streaks_summary["StartofPeak"] = pd.to_datetime(
-                #     streaks_summary["StartofPeak"]
-                # ).dt.strftime("%d %b %Y")
-                # streaks_summary["EndofPeak"] = pd.to_datetime(
-                #     streaks_summary["EndofPeak"]
-                # ).dt.strftime("%d %b %Y")
-
-                if choice2 == "Individual":
-                    temp = []
-                    for i in player:
-                        if i in streaks_summary["Bowler"].unique():
-                            temp.append(i)
-                        else:
-                            st.sidebar.subheader(f"{i} not in this list")
-                    streaks_summary = streaks_summary[
-                        streaks_summary["Bowler"].isin(temp)
-                    ]
-                    streaks_summary = streaks_summary.rename(
-                        columns={"Bowler": "Bowler"}
-                    )
-
-                    st.dataframe(streaks_summary.round(2), use_container_width=True)
-                else:
-                    streaks_summary = streaks_summary.rename(
-                        columns={"Bowler": "Bowler"}
-                    )
-
-                    streaks_summary = streaks_summary.sort_values(
-                        by=["Match Factor"], ascending=False
-                    )
-                    st.dataframe(streaks_summary.round(2), use_container_width=True)
+                results = results.sort_values(by=["Wickets"], ascending=False)
+                st.dataframe(results.round(2), use_container_width=True)
 
 
 # Run the main function
